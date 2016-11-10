@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">CyberSafetyApp</string>
+    <string name="welcome_text1">Welcome to the CyberSafety app! Thank you for downloading it!</string>
+    <string name="welcome_text2">If you are a returning user, click the log in button.</string>
+    <string name="welcome_text3">If you are a new user, please click the register button.</string>
+    <string name="welcome_text4">To know about this app and us, please click the bout button.</string>
+    <string name="button_register">Cick here to register</string>
+    <string name="button_login">Cick here to log in</string>
+    <string name="button_aboutus">About us</string>
+    <string name="textview_aboutus_aboutustext">This application was created as a part of the CyberSafety project by the
+    University of Colorado Boulder CyberSafety Lab. More can be found by going to http://www.cucybersafety.org/. further
+    queries or issues you want to talk to us about? Please email us at: cucybersafety@gmail.com</string>
+
+    <string name="textview_login_emailid">Please enter your email id</string>
+    <string name="textview_login_password">Please enter your password</string>
+    <string name="button_login_login">Log In</string>
+
+
+    <string name="textview_register_emailid">Email</string>
+    <string name="textview_register_emailid_confirmation">Re-enter Email</string>
+    <string name="textview_register_password">Password</string>
+    <string name="textview_register_password_confirmation">Re-enter Password</string>
+    <string name="textview_register_phone">Phone no</string>
+    <string name="button_register_register">Register</string>
+
+
+    <string name="button_dashboard_check_notifications">Check notifications</string>
+    <string name="button_dashboard_add_new_account">Add a new Social Network Account</string>
+    <string name="button_dashboard_edit_profile">Edit your profile settings</string>
+    <string name="textview_dashboard_check_notifications">You have # notifications. Want to check them out?</string>
+    <string name="textview_dashboard_add_new_account">Want to add a new social network profile to monitor?</string>
+    <string name="textview_dashboard_edit_profile">Want to change your password or phone number?</string>
+
+
+
+    <string name="textview_addnewprofile_contenttext">Here, you can add new social network profiles to monitor for potential
+    cyberbullying instances. Currently we are supporting four social networks, namely Facebook, Instagram, Vine and Ask.fm. You can
+    either search by the email and we will fetch all the social networks attached to that email address or you can select a particular
+    social network and enter the username of the profile. In case of a private social network profile, you have to give us the username
+    and password of that profile in order for you to monitor that profile.</string>
+    <string name="button_addnewprofile_searchbyemail">Search by email</string>
+    <string name="button_addnewprofile_searchbyusername">Search by username</string>
+
+
+    <string name="radio_searchbyusername_facebook">Facebook</string>
+    <string name="radio_searchbyusername_instagram">Instagram</string>
+    <string name="radio_searchbyusername_vine">Vine</string>
+    <string name="radio_searchbyusername_ask.fm">Ask.fm</string>
+</resources>
