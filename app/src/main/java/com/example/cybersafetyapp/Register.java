@@ -19,11 +19,11 @@ public class Register extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        databaseHelper = new DatabaseHelper(this);
     }
 
     private String checkValidRegistration(View v)
     {
-        System.out.println("validating registration fields");
         email = ((EditText)findViewById(R.id.edittext_register_emailid)).getText().toString();
         email_confirmation = ((EditText)findViewById(R.id.edittext_register_emailid)).getText().toString();
         if ((email.equals(email_confirmation) == false))
@@ -45,31 +45,36 @@ public class Register extends AppCompatActivity {
 
     public void buttonOnClickRegister(View v)
     {
-        System.out.println("database being created");
-        this.databaseHelper = new DatabaseHelper(this);
-        System.out.println("database finished being created");
-        /*String message = checkValidRegistration(v);
+        /*boolean insertion = this.databaseHelper.insertRegistrationData("test1@test.com","123456","1231231234");
+        System.out.println("insertion result:");
+        System.out.println(insertion);
+        System.out.println("now trying to print the data from the table");
+
+        Cursor res = this.databaseHelper.getAllData();
+        if(res.getCount() == 0)
+        {
+            System.out.println("Nothing found in the table");
+        }
+        else
+        {
+            while (res.moveToNext())
+            {
+                System.out.println("email :"+ res.getString(0)+"\n");
+                System.out.println("password :"+ res.getString(1)+"\n");
+                System.out.println("phone :"+ res.getString(2)+"\n");
+            }
+
+            System.out.println("printing data is done");
+        }*/
+
+
+
+        String message = checkValidRegistration(v);
         if (message.equals("valid"))
         {
-            System.out.println("valid data");
             boolean insertion = databaseHelper.insertRegistrationData(email,password,phone);
             if (insertion == true) {
                 Toast.makeText(Register.this,registrationSuccess,Toast.LENGTH_SHORT).show();
-
-                Cursor res = databaseHelper.showAllData();
-                if (res.getCount() == 0)
-                {
-                    System.out.println("no data in the table");
-                }
-                else
-                {
-                    while (res.moveToNext())
-                    {
-                        System.out.println(res.getString(0)+" "+res.getString(1)+" "+res.getString(2)+"\n");
-                    }
-
-
-                }
                 intent = new Intent("com.example.cybersafetyapp.LogIn");
                 startActivity(intent);
             }
@@ -85,7 +90,7 @@ public class Register extends AppCompatActivity {
             Toast.makeText(Register.this,message,Toast.LENGTH_LONG).show();
             intent = new Intent("com.example.cybersafetyapp.Register");
             startActivity(intent);
-        }*/
+        }
 
 
 

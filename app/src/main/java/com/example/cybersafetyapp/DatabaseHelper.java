@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.Settings;
 
+import java.io.File;
+
 /**
  * Created by RahatIbnRafiq on 11/14/2016.
  */
@@ -38,21 +40,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public Cursor showAllData()
+    public static boolean doesDatabaseExist(Context context, String dbName) {
+        File dbFile = context.getDatabasePath(dbName);
+        return dbFile.exists();
+    }
+
+    public Cursor getAllData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+NAME_TABLE_GUARDIAN_INFORMATION,null);
+        return res;
+    }
+
+    public boolean checkLoginGuardian(String email,String password)
     {
-        try
-        {
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
-            Cursor res = db.rawQuery("select * from "+NAME_TABLE_GUARDIAN_INFORMATION,null);
-            return res;
+            Cursor res = db.rawQuery("SELECT * FROM "+NAME_TABLE_GUARDIAN_INFORMATION+" WHERE EMAIL = ? AND PASSWORD = ?", new String[] {email, password});
+            if (res.getCount() == 1)
+                return true;
+            return false;
         }
         catch (Exception e)
         {
+            System.out.println("Exception happened at check log in function");
             System.out.println(e.toString());
-            System.out.println("exception happened show all data");
-            return null;
+            return false;
         }
     }
+
 
     public boolean insertRegistrationData(String email,String password,String phone)
     {
@@ -62,10 +77,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             contentValues.put(NAME_COL_EMAIL, email);
             contentValues.put(NAME_COL_PASSWORD, password);
             contentValues.put(NAME_COL_PHONE, phone);
-
-            System.out.println("trying to insert data");
             long result = db.insert(NAME_TABLE_GUARDIAN_INFORMATION, null, contentValues);
-            System.out.println("insertion done");
 
             if (result == -1)
                 return false;
@@ -73,10 +85,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         catch (Exception e)
         {
-            System.out.println(e.toString());
-            System.out.println("exception happened");
-
             return false;
         }
     }
+
 }

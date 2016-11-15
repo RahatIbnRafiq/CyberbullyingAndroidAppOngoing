@@ -20,15 +20,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:ems="10"
-        android:layout_below="@+id/textview_login_emailid"
-        android:layout_marginTop="14dp"
-        android:id="@+id/editext_login_emailid" />
-
     <TextView
         android:text="@string/textview_login_password"
         android:layout_width="wrap_content"
@@ -61,4 +52,15 @@
         android:layout_alignRight="@+id/edittext_login_password"
         android:layout_alignEnd="@+id/edittext_login_password"
         android:onClick="onClickLoginButton"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:layout_marginTop="16dp"
+        android:id="@+id/editext_login_emailid"
+        android:layout_below="@+id/textview_login_emailid"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
