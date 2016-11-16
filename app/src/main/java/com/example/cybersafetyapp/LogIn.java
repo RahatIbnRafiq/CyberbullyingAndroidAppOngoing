@@ -41,6 +41,7 @@ public class LogIn extends AppCompatActivity {
                 boolean queryResult = this.databaseHelper.checkLoginGuardian(this.email.toString(), this.password.toString());
                 if (queryResult == true) {
                     intent = new Intent("com.example.cybersafetyapp.Dashboard");
+                    intent.putExtra("email",this.email.toString());
                     startActivity(intent);
                 } else {
                     Toast.makeText(LogIn.this, "Login Credentials failed.Try Again.", Toast.LENGTH_LONG).show();
@@ -51,7 +52,9 @@ public class LogIn extends AppCompatActivity {
             } else {
                 Toast.makeText(LogIn.this, validMessage, Toast.LENGTH_LONG).show();
                 intent = new Intent("com.example.cybersafetyapp.LogIn");
+
                 startActivity(intent);
+
             }
         }catch (Exception e)
         {
