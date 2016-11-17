@@ -10,8 +10,12 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 
 public class SearchByUserName extends AppCompatActivity implements JsonResultReceiver.Receiver{
+
+    public static final int REQUEST_VINE_USER_SEARCH = 1;
     private JsonResultReceiver mReceiver;
     private String tag = "cybersafetyapp";
     private String logmsg = this.getClass().getName().toString();
@@ -38,6 +42,7 @@ public class SearchByUserName extends AppCompatActivity implements JsonResultRec
             Intent jsonIntentService = new Intent(this, IntentServiceGetJson.class);
             jsonIntentService.putExtra("url",urlVineUserSearch);
             jsonIntentService.putExtra("receiver", mReceiver);
+            jsonIntentService.putExtra("request", REQUEST_VINE_USER_SEARCH);
             startService(jsonIntentService);
         }
     }
@@ -46,17 +51,23 @@ public class SearchByUserName extends AppCompatActivity implements JsonResultRec
     public void onReceiveResult(int resultCode, Bundle resultData) {
         switch (resultCode) {
             case IntentServiceGetJson.STATUS_RUNNING:
+                Log.i(tag,logmsg+"Intent for getting json is running.");
                 break;
             case IntentServiceGetJson.STATUS_FINISHED:
                 String[] results = resultData.getStringArray("jsonResult");
-                for (int i = 0; i < results.length; i++)
+                /*for (int i = 0; i < results.length; i++)
                 {
-                    Log.i(tag,logmsg+"->username:"+results[i]);
-                }
+                    Log.i(tag,logmsg+"->user data:"+results[i]);
+                }*/
+
+                Intent intent = new Intent("com.example.cybersafetyapp.SearchResultProfiles");
+                intent.putExtra("searchResult",results);
+                intent.putExtra("request", resultData.getInt("request"));
+                startActivity(intent);
                 break;
             case IntentServiceGetJson.STATUS_ERROR:
                 String error = resultData.getString(Intent.EXTRA_TEXT);
-                Log.i(tag,logmsg+"Error while getting the usernames in intent:"+error);
+                Log.i(tag,logmsg+"Error while getting the users for gettinh json in intent:"+error);
                 break;
         }
 

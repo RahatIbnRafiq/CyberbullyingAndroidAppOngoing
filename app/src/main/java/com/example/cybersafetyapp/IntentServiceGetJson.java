@@ -53,38 +53,48 @@ public class IntentServiceGetJson extends IntentService {
 
 
         return result;
-    }
+}
 
-    private String[] parseResult(String result) {
+    private String[] parseVineUserSearchResult(String result) {
 
-        Log.i(tag,logmsg+": Parsing the result to json.");
+        Log.i(tag,logmsg+": Parsing the vine user search result to json.");
 
-        String[] users = null;
+        String[] searchData = null;
         try {
             JSONObject response = new JSONObject(result);
             JSONObject data = response.getJSONObject("data");
             JSONArray records = data.optJSONArray("records");
-            users = new String[records.length()-1];
+            searchData = new String[records.length()-1];
             for(int i=0;i<records.length()-1;i++)
             {
                 JSONObject record = records.optJSONObject(i);
-                String username = record.optString("username");
-                users[i] = username;
+                StringBuffer str = new StringBuffer();
+                str.append(record.optString("username"));
+                str.append(",");
+
+                str.append(record.optString("userId"));
+                str.append(",");
+
+                str.append(record.optString("avatarUrl"));
+                str.append(",");
+
+                str.append(record.optString("location"));
+                searchData[i] = str.toString();
             }
 
 
         } catch (JSONException e) {
-            Log.i(tag,logmsg+": Exception happend while parsing into json. "+e.toString());
+            Log.i(tag,logmsg+": Exception happend while parsing vine user search into json. "+e.toString());
             e.printStackTrace();
         }
 
-        Log.i(tag,logmsg+": Parsing is done.");
+        Log.i(tag,logmsg+": Parsing of vine user search is done.");
 
-        return users;
+        return searchData;
     }
 
 
-    private String[] getJSONObjectFromURL(String requestUrl) throws IOException, JSONException {
+    private String[] getJSONObjectFromURL(String requestUrl,int requestType) throws IOException, JSONException {
         Log.i(tag,logmsg+": Starting to get the input stream");
 
         InputStream inputStream = null;
@@ -102,9 +112,14 @@ public class IntentServiceGetJson extends IntentService {
             Log.i(tag,logmsg+": Status code is a success. Getting the stream now.");
             inputStream = new BufferedInputStream(urlConnection.getInputStream());
             String response = convertInputStreamToString(inputStream);
-            String[] results = parseResult(response);
+            if(requestType == SearchByUserName.REQUEST_VINE_USER_SEARCH) {
+                Log.i(tag,logmsg+":request type is "+SearchByUserName.REQUEST_VINE_USER_SEARCH);
+                String[] results = parseVineUserSearchResult(response);
+                return results;
+            }
             Log.i(tag,logmsg+": Returning the json.");
-            return results;
+            return null;
+
         }
         else
         {
@@ -115,14 +130,17 @@ public class IntentServiceGetJson extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent)
     {
-        Log.i(tag,logmsg+": Starting the intentservicegetjson intent now.");
+        Log.i(tag,logmsg+": Starting the IntentServiceGetJson intent now.");
         final ResultReceiver receiver = intent.getParcelableExtra("receiver");
         String url = intent.getStringExtra("url");
+        int requestType = intent.getIntExtra("request",0);
+        Log.i(tag,logmsg+":Handler function. Request type is "+requestType);
 
         Bundle bundle = new Bundle();
+        bundle.putInt("request",requestType);
 
         try {
-            String[] jsonResult = getJSONObjectFromURL(url);
+            String[] jsonResult = getJSONObjectFromURL(url,requestType);
             Log.i(tag,logmsg+": Got the json results.");
 
             if (jsonResult != null && jsonResult.length > 0) {

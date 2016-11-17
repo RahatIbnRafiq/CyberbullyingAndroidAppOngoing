@@ -9,32 +9,41 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.cybersafetyapp.SearchResultProfiles">
+    <Button
+        android:id="@+id/button_activity_search_result_profiles_start_monitoring"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Monitoring"
+        android:layout_marginBottom="10dp"
+        android:onClick="buttonOnClickStartMonitoring"/>
+
+
+    <ScrollView
+        android:id="@+id/layout"
+        android:layout_height="match_parent"
+        android:scrollbars="horizontal|vertical"
+        android:layout_width="match_parent"
+        android:layout_marginTop="55dip"
+        android:scrollbarStyle="outsideInset"
+        android:fillViewport="true">
+
+    <HorizontalScrollView
+        android:id="@+id/horizontalView"
+        android:layout_height="wrap_content"
+        android:scrollbars="horizontal|vertical"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="5dip">
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tableLayout1"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-
-        <TableRow
-            android:id="@+id/tableRow30"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="15dip" >
-
-            <TextView
-                android:id="@+id/textView02"
-                android:text="profile"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-            <Button
-                android:id="@+id/button03"
-                android:text="start monitoring"
-                android:onClick="buttonOnClickStartMonitoring"/>
-        </TableRow>
-
-
-
-
+        android:id="@+id/TableSearchResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
     </TableLayout>
+
+
+    </HorizontalScrollView>
+    </ScrollView>
+
+
 
 </RelativeLayout>
