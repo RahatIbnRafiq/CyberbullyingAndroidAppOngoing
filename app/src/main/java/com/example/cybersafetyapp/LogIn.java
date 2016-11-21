@@ -23,11 +23,11 @@ public class LogIn extends AppCompatActivity {
 
     private String checkValidLogin()
     {
-        if (this.email.length()<3)
-            return "not a valid email";
-        if (this.password.length() < 1)
-            return "not a valid password";
-        return "valid";
+        if (this.email.length()<ErrorMessageVariables.validEmailLength)
+            return ErrorMessageVariables.notValidEmail;
+        if (this.password.length() < ErrorMessageVariables.validPasswordLength)
+            return ErrorMessageVariables.notValidPassword;
+        return ErrorMessageVariables.valid;
     }
 
     public void onClickLoginButton(View v)
@@ -37,29 +37,30 @@ public class LogIn extends AppCompatActivity {
             this.password = ((EditText)findViewById(R.id.edittext_login_password)).getText().toString();
 
             String validMessage = this.checkValidLogin();
-            if (validMessage.equals("valid")) {
+            if (validMessage.equals(ErrorMessageVariables.valid)) {
                 boolean queryResult = this.databaseHelper.checkLoginGuardian(this.email.toString(), this.password.toString());
                 if (queryResult == true) {
-                    intent = new Intent("com.example.cybersafetyapp.Dashboard");
-                    intent.putExtra("email",this.email.toString());
+                    intent = new Intent(IntentSwitchVariables.Dashboard);
+                    intent.putExtra(IntentSwitchVariables.email,this.email.toString());
+                    intent.putExtra(IntentSwitchVariables.sourceClassName,this.getClass().getName().toString());
                     startActivity(intent);
                 } else {
-                    Toast.makeText(LogIn.this, "Login Credentials failed.Try Again.", Toast.LENGTH_LONG).show();
-                    intent = new Intent("com.example.cybersafetyapp.LogIn");
+                    Toast.makeText(LogIn.this, ErrorMessageVariables.logInCredentialFail, Toast.LENGTH_LONG).show();
+                    intent = new Intent(IntentSwitchVariables.LogIn);
                     startActivity(intent);
                 }
 
             } else {
                 Toast.makeText(LogIn.this, validMessage, Toast.LENGTH_LONG).show();
-                intent = new Intent("com.example.cybersafetyapp.LogIn");
+                intent = new Intent(IntentSwitchVariables.LogIn);
 
                 startActivity(intent);
 
             }
         }catch (Exception e)
         {
-            Toast.makeText(LogIn.this, "Oops! Something wrong must have happened. Please try again", Toast.LENGTH_LONG).show();
-            intent = new Intent("com.example.cybersafetyapp.LogIn");
+            Toast.makeText(LogIn.this, ErrorMessageVariables.logInUnexpectedError, Toast.LENGTH_LONG).show();
+            intent = new Intent(IntentSwitchVariables.LogIn);
             startActivity(intent);
 
         }

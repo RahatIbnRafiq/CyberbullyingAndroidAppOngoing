@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.Settings;
+import android.util.Log;
 
 import java.io.File;
 
@@ -16,10 +17,13 @@ import java.io.File;
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String NAME_DATABASE = "DATABASE_CYBERSAFETYAPP.db";
     public static final String NAME_TABLE_GUARDIAN_INFORMATION = "TABLE_GUARDIAN_INFORMATION";
+    public static final String NAME_TABLE_VINE_MONITORING_USER_TABLE = "TABLE_VINE_MONITORING_INFORMATION";
 
     public static final String NAME_COL_EMAIL = "EMAIL";
     public static final String NAME_COL_PASSWORD = "PASSWORD";
     public static final String NAME_COL_PHONE = "PHONE";
+    public static final String NAME_COL_USERNAME = "USERNAME";
+    public static final String NAME_COL_USERID = "USERID";
 
     public DatabaseHelper(Context context)
     {
@@ -30,6 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS "+NAME_TABLE_GUARDIAN_INFORMATION +" (EMAIL TEXT PRIMARY KEY NOT NULL, PASSWORD TEXT NOT NULL, PHONE TEXT NOT NULL )");
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+NAME_TABLE_VINE_MONITORING_USER_TABLE +" (EMAIL TEXT NOT NULL, USERID TEXT NOT NULL , PRIMARY KEY(EMAIL,USERID))");
 
     }
 
@@ -47,8 +52,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getAllData() {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+NAME_TABLE_GUARDIAN_INFORMATION,null);
-        return res;
+        return db.rawQuery("select * from "+NAME_TABLE_GUARDIAN_INFORMATION,null);
+    }
+
+    public Cursor getMonitoring(String tablename, String email)
+    {
+        Log.i(UtilityVariables.tag,"Inside databasehelper, getmonitoring count function");
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.rawQuery("SELECT * FROM "+tablename+" WHERE EMAIL = ?", new String[] {email});
     }
 
     public boolean checkLoginGuardian(String email,String password)
@@ -56,14 +67,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor res = db.rawQuery("SELECT * FROM "+NAME_TABLE_GUARDIAN_INFORMATION+" WHERE EMAIL = ? AND PASSWORD = ?", new String[] {email, password});
-            if (res.getCount() == 1)
+            if(res.getCount()==1)
+            {
+                res.close();
                 return true;
+            }
+            res.close();
             return false;
         }
         catch (Exception e)
         {
-            System.out.println("Exception happened at check log in function");
-            System.out.println(e.toString());
             return false;
         }
     }
@@ -79,14 +92,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             contentValues.put(NAME_COL_PHONE, phone);
             long result = db.insert(NAME_TABLE_GUARDIAN_INFORMATION, null, contentValues);
 
-            if (result == -1)
-                return false;
-            return true;
+            if(result==1)
+                return true;
+            return false;
         }
         catch (Exception e)
         {
             return false;
         }
     }
+
+    public long insertMonitoringTable(String email,String userid,String tableName)
+    {
+        try {
+            Log.i(UtilityVariables.tag," database helper insert monitoring table function");
+            Log.i(UtilityVariables.tag,email+","+userid+","+tableName);
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(NAME_COL_EMAIL, email);
+            contentValues.put(NAME_COL_USERID, userid);
+            return db.insert(tableName, null, contentValues);
+        }
+        catch (Exception e)
+        {
+            return -1;
+
+        }
+    }
+
+
+
 
 }

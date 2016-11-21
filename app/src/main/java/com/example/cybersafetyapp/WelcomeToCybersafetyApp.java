@@ -4,10 +4,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 
 public class WelcomeToCybersafetyApp extends AppCompatActivity {
-    private Intent intent;
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,19 +15,22 @@ public class WelcomeToCybersafetyApp extends AppCompatActivity {
 
     public void buttonOnClickAboutUs(View v)
     {
-        intent = new Intent("com.example.cybersafetyapp.Aboutus");
+        Intent intent = new Intent(IntentSwitchVariables.AboutUs);
+        intent.putExtra(IntentSwitchVariables.sourceClassName,this.getClass().getName());
         startActivity(intent);
     }
 
     public void buttonOnClickLogIn(View v)
     {
-        intent = new Intent("com.example.cybersafetyapp.LogIn");
+        Intent intent = new Intent(IntentSwitchVariables.LogIn);
+        intent.putExtra(IntentSwitchVariables.sourceClassName,this.getClass().getName());
         startActivity(intent);
     }
 
     public void buttonOnClickRegister(View v)
     {
-        intent = new Intent("com.example.cybersafetyapp.Register");
+        Intent intent = new Intent(IntentSwitchVariables.Register);
+        intent.putExtra(IntentSwitchVariables.sourceClassName,this.getClass().getName());
         startActivity(intent);
     }
 }

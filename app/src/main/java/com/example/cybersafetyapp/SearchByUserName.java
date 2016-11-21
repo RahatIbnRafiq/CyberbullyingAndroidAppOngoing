@@ -10,23 +10,39 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 
 public class SearchByUserName extends AppCompatActivity implements JsonResultReceiver.Receiver{
 
-    public static final int REQUEST_VINE_USER_SEARCH = 1;
+
     private JsonResultReceiver mReceiver;
-    private String tag = "cybersafetyapp";
-    private String logmsg = this.getClass().getName().toString();
+    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_by_user_name);
+        Bundle messages = getIntent().getExtras();
+        if(messages == null ||
+                messages.getString(IntentSwitchVariables.sourceClassName) == null ||
+                !messages.getString(IntentSwitchVariables.sourceClassName).equals(AddNewProfile.class.getName()))
+        {
+            Intent intent = new Intent(IntentSwitchVariables.Dashboard);
 
+            try{
+                email = messages.getString(IntentSwitchVariables.email);
+                intent.putExtra(IntentSwitchVariables.email,email);
 
+            }catch(Exception e)
+            {
+                Log.i(UtilityVariables.tag,UtilityVariables.AddNewProfile+" search by user name did not get email.");
+            }
+
+            intent.putExtra(IntentSwitchVariables.sourceClassName,this.getClass().getName());
+            startActivity(intent);
+        }
+        email = messages.getString(IntentSwitchVariables.email);
     }
+
 
     public void buttonOnclickSearchByUserName(View v)
     {
@@ -40,9 +56,10 @@ public class SearchByUserName extends AppCompatActivity implements JsonResultRec
             mReceiver.setReceiver(this);
             String urlVineUserSearch = "https://api.vineapp.com/search/users/"+userToSearch;
             Intent jsonIntentService = new Intent(this, IntentServiceGetJson.class);
-            jsonIntentService.putExtra("url",urlVineUserSearch);
-            jsonIntentService.putExtra("receiver", mReceiver);
-            jsonIntentService.putExtra("request", REQUEST_VINE_USER_SEARCH);
+            jsonIntentService.putExtra(IntentSwitchVariables.url,urlVineUserSearch);
+            jsonIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
+            jsonIntentService.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_VINE_USER_SEARCH);
+            jsonIntentService.putExtra(IntentSwitchVariables.OSNName, IntentSwitchVariables.Vine);
             startService(jsonIntentService);
         }
     }
@@ -51,23 +68,21 @@ public class SearchByUserName extends AppCompatActivity implements JsonResultRec
     public void onReceiveResult(int resultCode, Bundle resultData) {
         switch (resultCode) {
             case IntentServiceGetJson.STATUS_RUNNING:
-                Log.i(tag,logmsg+"Intent for getting json is running.");
+                Toast.makeText(this,ErrorMessageVariables.GettingUsers,Toast.LENGTH_SHORT).show();
                 break;
             case IntentServiceGetJson.STATUS_FINISHED:
-                String[] results = resultData.getStringArray("jsonResult");
-                /*for (int i = 0; i < results.length; i++)
-                {
-                    Log.i(tag,logmsg+"->user data:"+results[i]);
-                }*/
-
-                Intent intent = new Intent("com.example.cybersafetyapp.SearchResultProfiles");
-                intent.putExtra("searchResult",results);
-                intent.putExtra("request", resultData.getInt("request"));
+                String[] results = resultData.getStringArray(IntentSwitchVariables.JsonResult);
+                Intent intent = new Intent(IntentSwitchVariables.SearchResultProfiles);
+                intent.putExtra(IntentSwitchVariables.SearchResult,results);
+                intent.putExtra(IntentSwitchVariables.request, resultData.getInt(IntentSwitchVariables.request));
+                intent.putExtra(IntentSwitchVariables.email,this.email);
+                intent.putExtra(IntentSwitchVariables.OSNName,resultData.getString(IntentSwitchVariables.OSNName));
+                intent.putExtra(IntentSwitchVariables.sourceClassName,this.getClass().getName());
                 startActivity(intent);
                 break;
             case IntentServiceGetJson.STATUS_ERROR:
                 String error = resultData.getString(Intent.EXTRA_TEXT);
-                Log.i(tag,logmsg+"Error while getting the users for gettinh json in intent:"+error);
+                Toast.makeText(this,ErrorMessageVariables.ErrorWhileGettingUsers,Toast.LENGTH_SHORT).show();
                 break;
         }
 

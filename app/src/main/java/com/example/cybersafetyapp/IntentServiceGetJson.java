@@ -34,31 +34,19 @@ public class IntentServiceGetJson extends IntentService {
         super("IntentServiceGetJson");
     }
     private String convertInputStreamToString(InputStream inputStream) throws IOException {
-        Log.i(tag,logmsg+": Converting input stream to string");
-
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         String line = "";
         String result = "";
-
         while ((line = bufferedReader.readLine()) != null) {
             result += line;
         }
-
-            /* Close Stream */
         if (null != inputStream) {
-            Log.i(tag,logmsg+": Closing input stream");
             inputStream.close();
         }
-        Log.i(tag,logmsg+": Conversion of stream to string is done. Getting out.");
-
-
         return result;
 }
 
     private String[] parseVineUserSearchResult(String result) {
-
-        Log.i(tag,logmsg+": Parsing the vine user search result to json.");
-
         String[] searchData = null;
         try {
             JSONObject response = new JSONObject(result);
@@ -84,19 +72,13 @@ public class IntentServiceGetJson extends IntentService {
 
 
         } catch (JSONException e) {
-            Log.i(tag,logmsg+": Exception happend while parsing vine user search into json. "+e.toString());
             e.printStackTrace();
         }
-
-        Log.i(tag,logmsg+": Parsing of vine user search is done.");
-
         return searchData;
     }
 
 
     private String[] getJSONObjectFromURL(String requestUrl,int requestType) throws IOException, JSONException {
-        Log.i(tag,logmsg+": Starting to get the input stream");
-
         InputStream inputStream = null;
         HttpURLConnection urlConnection = null;
 
@@ -109,17 +91,13 @@ public class IntentServiceGetJson extends IntentService {
 
         if(statusCode == 200)
         {
-            Log.i(tag,logmsg+": Status code is a success. Getting the stream now.");
             inputStream = new BufferedInputStream(urlConnection.getInputStream());
             String response = convertInputStreamToString(inputStream);
-            if(requestType == SearchByUserName.REQUEST_VINE_USER_SEARCH) {
-                Log.i(tag,logmsg+":request type is "+SearchByUserName.REQUEST_VINE_USER_SEARCH);
+            if(requestType == IntentSwitchVariables.REQUEST_VINE_USER_SEARCH) {
                 String[] results = parseVineUserSearchResult(response);
                 return results;
             }
-            Log.i(tag,logmsg+": Returning the json.");
             return null;
-
         }
         else
         {
@@ -130,32 +108,27 @@ public class IntentServiceGetJson extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent)
     {
-        Log.i(tag,logmsg+": Starting the IntentServiceGetJson intent now.");
-        final ResultReceiver receiver = intent.getParcelableExtra("receiver");
-        String url = intent.getStringExtra("url");
-        int requestType = intent.getIntExtra("request",0);
-        Log.i(tag,logmsg+":Handler function. Request type is "+requestType);
+        final ResultReceiver receiver = intent.getParcelableExtra(IntentSwitchVariables.receiver);
+        String url = intent.getStringExtra(IntentSwitchVariables.url);
+        int requestType = intent.getIntExtra(IntentSwitchVariables.request,0);
+        String osnName = intent.getStringExtra(IntentSwitchVariables.OSNName);
 
         Bundle bundle = new Bundle();
-        bundle.putInt("request",requestType);
+        bundle.putInt(IntentSwitchVariables.request,requestType);
+        bundle.putString(IntentSwitchVariables.OSNName,osnName);
 
         try {
             String[] jsonResult = getJSONObjectFromURL(url,requestType);
-            Log.i(tag,logmsg+": Got the json results.");
-
             if (jsonResult != null && jsonResult.length > 0) {
-                bundle.putStringArray("jsonResult", jsonResult);
-                Log.i(tag,logmsg+": Sending the result back from intent to activity");
+                bundle.putStringArray(IntentSwitchVariables.JsonResult, jsonResult);
                 receiver.send(STATUS_FINISHED, bundle);
             }
             else
             {
-                Log.i(tag,logmsg+": No Users have been found.");
-                bundle.putString(Intent.EXTRA_TEXT, "No Users Found. Try again with a different username.");
+                bundle.putString(Intent.EXTRA_TEXT, IntentSwitchVariables.NoUsersFound);
                 receiver.send(STATUS_FINISHED, bundle);
             }
         } catch (Exception e) {
-            Log.i(tag,logmsg+": Exception happened while getting users. "+e.toString());
             bundle.putString(Intent.EXTRA_TEXT, e.toString());
             receiver.send(STATUS_ERROR, bundle);
         }
