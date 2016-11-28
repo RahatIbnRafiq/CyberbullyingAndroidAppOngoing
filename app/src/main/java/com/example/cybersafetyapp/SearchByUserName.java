@@ -47,6 +47,7 @@ public class SearchByUserName extends AppCompatActivity implements JsonResultRec
     public void buttonOnclickSearchByUserName(View v)
     {
         RadioButton radioVine = (RadioButton)findViewById(R.id.radio_searchbyusername_vine);
+        RadioButton radioInstagram = (RadioButton)findViewById(R.id.radio_searchbyusername_instagram);
         String userToSearch = ((EditText)findViewById(R.id.edittext_searchbyusername_username)).getText().toString().trim();
         userToSearch = userToSearch.replace(" ","%20");
 
@@ -61,6 +62,11 @@ public class SearchByUserName extends AppCompatActivity implements JsonResultRec
             jsonIntentService.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_VINE_USER_SEARCH);
             jsonIntentService.putExtra(IntentSwitchVariables.OSNName, IntentSwitchVariables.Vine);
             startService(jsonIntentService);
+        }
+
+        else if (radioInstagram.isChecked())
+        {
+            
         }
     }
 
