@@ -4,7 +4,14 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import android.text.Html;
 import android.util.Log;
+
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -105,6 +112,26 @@ public class IntentServiceGetJson extends IntentService {
         }
     }
 
+    private String getHTMLResponseFromURL(String url)
+    {
+        try {
+            Document doc  = Jsoup.connect(url).get();
+            Elements trWithStartingClassMyClass = doc.select("div[data-react-class^=UserBox]");
+            //Log.i(UtilityVariables.tag,"success while getting html response for url "+url);
+            return trWithStartingClassMyClass.toString();
+
+        }catch (Exception e)
+        {
+            Log.i(UtilityVariables.tag,"Exception while getting html response for url "+url);
+            Log.i(UtilityVariables.tag,e.toString());
+        }
+
+        return null;
+
+    }
+
+
+
     @Override
     protected void onHandleIntent(Intent intent)
     {
@@ -116,21 +143,57 @@ public class IntentServiceGetJson extends IntentService {
         Bundle bundle = new Bundle();
         bundle.putInt(IntentSwitchVariables.request,requestType);
         bundle.putString(IntentSwitchVariables.OSNName,osnName);
+        if(osnName.equals(IntentSwitchVariables.INSTAGRAM) && requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
+        {
+            String[] searchData = null;
+            try {
+                //Log.i(UtilityVariables.tag, "Request type is instagram user search in intentservice json");
+                String userSearchHtml = getHTMLResponseFromURL(url);
+                int index1 = userSearchHtml.indexOf("data-react-props") + 18;
+                int index2 = userSearchHtml.length() - 8;
+                userSearchHtml = userSearchHtml.substring(index1, index2);
+                userSearchHtml = Jsoup.parse(userSearchHtml).text().toString();
 
-        try {
-            String[] jsonResult = getJSONObjectFromURL(url,requestType);
-            if (jsonResult != null && jsonResult.length > 0) {
-                bundle.putStringArray(IntentSwitchVariables.JsonResult, jsonResult);
+                JSONObject response = new JSONObject(userSearchHtml);
+                JSONArray data = response.getJSONArray("data");
+                searchData = new String[data.length()];
+                for(int i=0;i<data.length();i++) {
+                    JSONObject record = data.optJSONObject(i);
+                    StringBuffer str = new StringBuffer();
+                    str.append(record.optString("username"));
+                    str.append(",");
+
+                    str.append(record.optString("id"));
+                    str.append(",");
+
+                    str.append(record.optString("profile_picture"));
+                    searchData[i] = str.toString();
+                    //Log.i(UtilityVariables.tag, str.toString());
+                }
+                bundle.putStringArray(IntentSwitchVariables.JsonResult, searchData);
                 receiver.send(STATUS_FINISHED, bundle);
-            }
-            else
+
+            }catch (Exception e)
             {
-                bundle.putString(Intent.EXTRA_TEXT, IntentSwitchVariables.NoUsersFound);
-                receiver.send(STATUS_FINISHED, bundle);
+                Log.i(UtilityVariables.tag, "Exception in intagram user search parsing to json "+e.toString());
             }
-        } catch (Exception e) {
-            bundle.putString(Intent.EXTRA_TEXT, e.toString());
-            receiver.send(STATUS_ERROR, bundle);
+
+
+        }
+        else {
+            try {
+                String[] jsonResult = getJSONObjectFromURL(url, requestType);
+                if (jsonResult != null && jsonResult.length > 0) {
+                    bundle.putStringArray(IntentSwitchVariables.JsonResult, jsonResult);
+                    receiver.send(STATUS_FINISHED, bundle);
+                } else {
+                    bundle.putString(Intent.EXTRA_TEXT, IntentSwitchVariables.NoUsersFound);
+                    receiver.send(STATUS_FINISHED, bundle);
+                }
+            } catch (Exception e) {
+                bundle.putString(Intent.EXTRA_TEXT, e.toString());
+                receiver.send(STATUS_ERROR, bundle);
+            }
         }
     }
 }

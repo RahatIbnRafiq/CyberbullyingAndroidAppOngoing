@@ -16,6 +16,7 @@ public class IntentSwitchVariables {
 
 
     public static final int REQUEST_VINE_USER_SEARCH = 1;
+    public static final int REQUEST_INSTAGRAM_USER_SEARCH = 11;
 
 
 
@@ -38,4 +39,5 @@ public class IntentSwitchVariables {
 
     public static final String OSNName = "OSNName";
     public static final String Vine = "Vine";
+    public static final String INSTAGRAM = "Instagram";
 }

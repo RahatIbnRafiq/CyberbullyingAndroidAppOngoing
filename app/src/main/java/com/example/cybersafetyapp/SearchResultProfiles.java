@@ -44,7 +44,7 @@ public class SearchResultProfiles extends AppCompatActivity {
         osnName = messages.getString(IntentSwitchVariables.OSNName);
 
         TableLayout tableSearchResult = (TableLayout) findViewById(R.id.TableSearchResult);
-        if(requestType == IntentSwitchVariables.REQUEST_VINE_USER_SEARCH && results != null)
+        if(results != null)
         {
             for (int i = 0; i < results.length; i++)
             {

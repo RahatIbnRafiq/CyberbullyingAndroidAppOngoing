@@ -11,4 +11,20 @@ public class UtilityVariables {
     public static final String tag = "cybersafetyapp";
     public static final String AddNewProfile = "AddNewProfile";
 
+
+    //websta.me client
+    //public static final String INSTAGRAM_CLIENT_ID = "9d836570317f4c18bca0db6d2ac38e29";
+    //public static final String INSTAGRAM_CLIENT_SECRET = "pbnfE3ntLr00nuZk3qX0w5m3avmhEUO7";
+    //public static final String INSTAGRAM_CALLBACK_URL = "http://websta.me/callback";
+
+
+
+    public static final String INSTAGRAM_CLIENT_ID = "362741ea25924668af07edfb3873e3a2";
+    public static final String INSTAGRAM_CLIENT_SECRET = "ed14022584a2494690a6d9da21f7ee6e";
+    public static final String INSTAGRAM_CALLBACK_URL = "http://localhost";
+
+    public static final String VINE_URL_USER_SEARCH = "https://api.vineapp.com/search/users/";
+    public static final String INSTAGRAM_URL_USER_SEARCH = "https://websta.me/search/";
+
+
 }

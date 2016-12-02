@@ -50,12 +50,13 @@ public class SearchByUserName extends AppCompatActivity implements JsonResultRec
         RadioButton radioInstagram = (RadioButton)findViewById(R.id.radio_searchbyusername_instagram);
         String userToSearch = ((EditText)findViewById(R.id.edittext_searchbyusername_username)).getText().toString().trim();
         userToSearch = userToSearch.replace(" ","%20");
+        userToSearch = userToSearch.replace(".","_");
 
         if(radioVine.isChecked())
         {
             mReceiver = new JsonResultReceiver(new Handler());
             mReceiver.setReceiver(this);
-            String urlVineUserSearch = "https://api.vineapp.com/search/users/"+userToSearch;
+            String urlVineUserSearch = UtilityVariables.VINE_URL_USER_SEARCH+userToSearch;
             Intent jsonIntentService = new Intent(this, IntentServiceGetJson.class);
             jsonIntentService.putExtra(IntentSwitchVariables.url,urlVineUserSearch);
             jsonIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
@@ -66,7 +67,19 @@ public class SearchByUserName extends AppCompatActivity implements JsonResultRec
 
         else if (radioInstagram.isChecked())
         {
-            
+            mReceiver = new JsonResultReceiver(new Handler());
+            mReceiver.setReceiver(this);
+
+            String urlInstagramUserSearch = UtilityVariables.INSTAGRAM_URL_USER_SEARCH+userToSearch;
+            Intent jsonIntentService = new Intent(this, IntentServiceGetJson.class);
+            jsonIntentService.putExtra(IntentSwitchVariables.url,urlInstagramUserSearch);
+            jsonIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
+            jsonIntentService.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH);
+            jsonIntentService.putExtra(IntentSwitchVariables.OSNName, IntentSwitchVariables.INSTAGRAM);
+            startService(jsonIntentService);
+            /*InstagramApp mApp = new InstagramApp(this,UtilityVariables.INSTAGRAM_CLIENT_ID,
+                    UtilityVariables.INSTAGRAM_CLIENT_SECRET,UtilityVariables.INSTAGRAM_CALLBACK_URL);
+            mApp.authorize();*/
         }
     }
 
