@@ -201,7 +201,7 @@ public class SearchResultProfiles extends AppCompatActivity {
     {
         Log.i(UtilityVariables.tag," going to check if valid function in search result profiles");
         String whereToSwitch = checkIfValidMonitoringRequest(v);
-        Log.i(UtilityVariables.tag," switching to this activity from search result ptofiles activity "+whereToSwitch);
+        Log.i(UtilityVariables.tag," switching to this activity from search result profiles activity "+whereToSwitch);
         Intent intent = new Intent(whereToSwitch);
         intent.putExtra(IntentSwitchVariables.email,email);
         intent.putExtra(IntentSwitchVariables.sourceClassName,this.getClass().getName());

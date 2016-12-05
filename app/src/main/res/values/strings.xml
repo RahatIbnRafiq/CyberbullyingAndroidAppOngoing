@@ -46,4 +46,5 @@
     <string name="radio_searchbyusername_instagram">Instagram</string>
     <string name="radio_searchbyusername_vine">Vine</string>
     <string name="radio_searchbyusername_ask.fm">Ask.fm</string>
+    <string name="title_activity_instagram_login">InstagramLogin</string>
 </resources>
