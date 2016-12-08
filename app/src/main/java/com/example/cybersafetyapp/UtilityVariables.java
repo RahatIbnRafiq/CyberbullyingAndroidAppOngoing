@@ -24,6 +24,11 @@ public class UtilityVariables {
     public static final String INSTAGRAM_CALLBACK_URL = "http://localhost";
 
     public static final String VINE_URL_USER_SEARCH = "https://api.vineapp.com/search/users/";
+    public static final String VINE_URL_USER_DETAIL = "https://api.vineapp.com/users/profiles/";
+
+
+
+
     public static final String INSTAGRAM_URL_USER_SEARCH = "https://websta.me/search/";
 
 

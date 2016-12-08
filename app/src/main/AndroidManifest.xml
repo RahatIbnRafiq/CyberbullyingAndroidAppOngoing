@@ -102,10 +102,17 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <activity android:name=".MonitoringProfileList">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.MonitoringProfileList" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".UserSocialNetworkInformationDetail">
+            <intent-filter>
+                <action android:name="com.example.cybersafetyapp.UserSocialNetworkInformationDetail" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

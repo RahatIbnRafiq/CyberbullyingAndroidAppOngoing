@@ -93,6 +93,42 @@ public class IntentServiceVine extends IntentService {
     }
 
 
+    private void getUserInformation(Intent intent)
+    {
+        ResultReceiver receiver = intent.getParcelableExtra(IntentSwitchVariables.receiver);
+        Bundle bundle = new Bundle();
+        try {
+            InputStream inputStream = null;
+            HttpURLConnection urlConnection = null;
+            String urlString = UtilityVariables.VINE_URL_USER_DETAIL+ intent.getStringExtra(IntentSwitchVariables.USERID)+
+                    "?vine-session-id="+intent.getStringExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN);
+
+            URL url = new URL(urlString);
+            //Log.i(UtilityVariables.tag,"url string for vine user search "+urlString);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            //urlConnection.setRequestProperty("vine-session-id",intent.getStringExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN));
+
+
+            inputStream = new BufferedInputStream(urlConnection.getInputStream());
+            String response = streamToString(inputStream);
+            //Log.i(UtilityVariables.tag,"User information found for vine: "+response);
+            bundle.putString(IntentSwitchVariables.VINE_USER_DETAIL_RESULT_JSON,response);
+            bundle.putString(IntentSwitchVariables.USERID,intent.getStringExtra(IntentSwitchVariables.USERID));
+            bundle.putString(IntentSwitchVariables.VINE_ACCESS_TOKEN,intent.getStringExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN));
+            bundle.putInt(IntentSwitchVariables.request,IntentSwitchVariables.REQUEST_VINE_USER_DETAIL);
+            receiver.send(STATUS_FINISHED, bundle);
+            //Log.i(UtilityVariables.tag,"vine user search response: "+response);
+        }catch (Exception ex)
+        {
+            Log.i(UtilityVariables.tag,"Exception in getUserInformation function in IntentServiceVine : "+ex.toString());
+            receiver.send(STATUS_ERROR, bundle);
+        }
+
+    }
+
+
     private String streamToString(InputStream is) throws IOException {
         String str = "";
 
@@ -176,6 +212,11 @@ public class IntentServiceVine extends IntentService {
         else if(requestType == IntentSwitchVariables.REQUEST_VINE_USER_SEARCH)
         {
             getUserSearchResult(intent);
+        }
+
+        else if (requestType == IntentSwitchVariables.REQUEST_VINE_USER_DETAIL)
+        {
+            getUserInformation(intent);
         }
     }
 }

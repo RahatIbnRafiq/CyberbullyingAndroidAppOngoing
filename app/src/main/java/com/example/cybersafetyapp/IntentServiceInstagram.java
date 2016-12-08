@@ -122,6 +122,45 @@ public class IntentServiceInstagram extends IntentService {
 
     }
 
+    private void getUserInformation(Intent intent)
+    {
+        ResultReceiver receiver = intent.getParcelableExtra(IntentSwitchVariables.receiver);
+        Bundle bundle = new Bundle();
+        try {
+
+            String accessToken = intent.getStringExtra(IntentSwitchVariables.InstagramAccessToken);
+            String userid = intent.getStringExtra(IntentSwitchVariables.USERID);
+
+
+            InputStream inputStream = null;
+            HttpURLConnection urlConnection = null;
+
+            URL url = new URL("https://api.instagram.com/v1/users/"+userid+"/?access_token="+accessToken);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+
+            int statusCode = urlConnection.getResponseCode();
+            Log.i(UtilityVariables.tag,"status code "+statusCode);
+            if(statusCode == 200)
+            {
+                inputStream = new BufferedInputStream(urlConnection.getInputStream());
+                String response = convertInputStreamToString(inputStream);
+                Log.i(UtilityVariables.tag,"User information found for instagram: "+response);
+                bundle.putString(IntentSwitchVariables.InstagramAccessToken, intent.getStringExtra(IntentSwitchVariables.InstagramAccessToken));
+                bundle.putString(IntentSwitchVariables.USERID, userid);
+                bundle.putInt(IntentSwitchVariables.request,IntentSwitchVariables.REQUEST_INSTAGRAM_USER_DETAIL);
+                bundle.putString(IntentSwitchVariables.INSTAGRAM_USER_DETAIL_RESULT_JSON,response);
+                receiver.send(STATUS_FINISHED, bundle);
+            }
+        }catch (Exception ex)
+        {
+            Log.i(UtilityVariables.tag,"Exception in getUserInformation function in IntentServiceInstagram : "+ex.toString());
+            receiver.send(STATUS_ERROR, bundle);
+        }
+
+    }
+
     private void getAccessToken(Intent intent)
     {
         ResultReceiver receiver = intent.getParcelableExtra(IntentSwitchVariables.receiver);
@@ -129,7 +168,6 @@ public class IntentServiceInstagram extends IntentService {
         String email = intent.getStringExtra(IntentSwitchVariables.email);
         String code = codeUrl.split("=")[1];
         Bundle bundle = new Bundle();
-        databaseHelper = new DatabaseHelper(this);
 
         try {
             URL url = new URL(TOKEN_URL);
@@ -171,6 +209,10 @@ public class IntentServiceInstagram extends IntentService {
         else if (requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
         {
             instagramUserSearch(intent);
+        }
+        else if (requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_DETAIL)
+        {
+            getUserInformation(intent);
         }
 
 

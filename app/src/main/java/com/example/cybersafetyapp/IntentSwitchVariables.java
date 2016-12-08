@@ -18,9 +18,12 @@ public class IntentSwitchVariables {
 
     public static final int REQUEST_VINE_USER_SEARCH = 1;
     public static final int REQUEST_VINE_ACCESS_TOKEN = 2;
+    public static final int REQUEST_VINE_USER_DETAIL = 3;
 
 
     public static final int REQUEST_INSTAGRAM_USER_SEARCH = 11;
+    public static final int REQUEST_INSTAGRAM_ACCESS_TOKEN = 12;
+    public static final int REQUEST_INSTAGRAM_USER_DETAIL = 13;
 
 
 
@@ -51,14 +54,17 @@ public class IntentSwitchVariables {
     public static final String InstagramLoginCode = "InstagramLoginCode";
     public static final String InstagramAccessToken = "InstagramAccessToken";
     public static final String  INSTAGRAM_USER_SEARCH_RESULT_JSON = "INSTAGRAM_USER_SEARCH_RESULT_JSON";
+    public static final String  INSTAGRAM_USER_DETAIL_RESULT_JSON = "INSTAGRAM_USER_DETAIL_RESULT_JSON";
 
 
 
     public static final String VINE_ACCESS_TOKEN = "VINE_ACCESS_TOKEN";
     public static final String VINE_USER_SEARCH_RESULT_JSON = "VINE_USER_SEARCH_RESULT_JSON";
+    public static final String VINE_USER_DETAIL_RESULT_JSON = "VINE_USER_DETAIL_RESULT_JSON";
 
 
 
     public static final String USERNAME_TO_BE_SEARCHED = "USERNAME_TO_BE_SEARCHED";
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
+    public static final String USERID = "USERID";
 }

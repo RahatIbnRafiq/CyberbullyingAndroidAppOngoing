@@ -1,7 +1,9 @@
 package com.example.cybersafetyapp;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +25,7 @@ public class MonitoringProfileList extends AppCompatActivity implements View.OnC
     DatabaseHelper databaseHelper;
     private String email;
     TableLayout tableSearchResult;
+    private JsonResultReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,13 +119,64 @@ public class MonitoringProfileList extends AppCompatActivity implements View.OnC
         TableRow row = (TableRow)clickToViewPosts.getParent();
         TextView osnName = (TextView)row.getChildAt(0);
         TextView username = (TextView)row.getChildAt(1);
-        TextView userid = (TextView)row.getChildAt(2);
+        TextView userid = (TextView)row.getChildAt(3);
+        if(osnName.getText().toString().equals("Instagram"))
+        {
+            Log.i(UtilityVariables.tag,"the user is from instagram");
+            mReceiver = new JsonResultReceiver(new Handler());
+            mReceiver.setReceiver(this);
+            Intent instagramIntentService = new Intent(this, IntentServiceInstagram.class);
+            instagramIntentService.putExtra(IntentSwitchVariables.USERID,userid.getText().toString());
+            instagramIntentService.putExtra(IntentSwitchVariables.InstagramAccessToken,databaseHelper.getAccessTokenForGuardian(this.email,DatabaseHelper.NAME_COL_INSTAGRAM_TOKEN));
+            instagramIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
+            instagramIntentService.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_INSTAGRAM_USER_DETAIL);
+            startService(instagramIntentService);
+
+        }
+        else if (osnName.getText().toString().equals("Vine"))
+        {
+            Log.i(UtilityVariables.tag,"the user is from vine");
+            mReceiver = new JsonResultReceiver(new Handler());
+            mReceiver.setReceiver(this);
+            Intent vineIntentService = new Intent(this, IntentServiceVine.class);
+            vineIntentService.putExtra(IntentSwitchVariables.USERID,userid.getText().toString());
+            vineIntentService.putExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN,databaseHelper.getAccessTokenForGuardian(this.email,DatabaseHelper.NAME_COL_VINE_TOKEN));
+            vineIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
+            vineIntentService.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_VINE_USER_DETAIL);
+            startService(vineIntentService);
+
+        }
         //Log.i(UtilityVariables.tag,osnName.getText().toString()+","+username.getText().toString());
 
     }
 
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
+
+        switch (resultCode) {
+            case IntentServiceGetJson.STATUS_RUNNING:
+                break;
+            case IntentServiceGetJson.STATUS_FINISHED:
+                //Log.i(UtilityVariables.tag,"access token back to the login class "+resultData.getString(IntentSwitchVariables.VINE_ACCESS_TOKEN));
+                Intent intent = new Intent(UserSocialNetworkInformationDetail.class.getName());
+                intent.putExtra(IntentSwitchVariables.email,this.email);
+                intent.putExtra(IntentSwitchVariables.request,resultData.getInt(IntentSwitchVariables.request));
+                intent.putExtra(IntentSwitchVariables.USERID, resultData.getString(IntentSwitchVariables.USERID));
+                if(resultData.getInt(IntentSwitchVariables.request) == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_DETAIL)
+                {
+                    intent.putExtra(IntentSwitchVariables.INSTAGRAM_USER_DETAIL_RESULT_JSON,resultData.getString(IntentSwitchVariables.INSTAGRAM_USER_DETAIL_RESULT_JSON));
+                    intent.putExtra(IntentSwitchVariables.InstagramAccessToken,resultData.getString(IntentSwitchVariables.InstagramAccessToken));
+                }
+                else if(resultData.getInt(IntentSwitchVariables.request) == IntentSwitchVariables.REQUEST_VINE_USER_DETAIL)
+                {
+                    intent.putExtra(IntentSwitchVariables.VINE_USER_DETAIL_RESULT_JSON,resultData.getString(IntentSwitchVariables.VINE_USER_DETAIL_RESULT_JSON));
+                    intent.putExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN,resultData.getString(IntentSwitchVariables.VINE_ACCESS_TOKEN));
+                }
+                startActivity(intent);
+                break;
+            case IntentServiceGetJson.STATUS_ERROR:
+                break;
+        }
 
     }
 }
