@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.jsoup.Jsoup;
@@ -36,6 +37,8 @@ public class IntentServiceInstagram extends IntentService {
     public static final int STATUS_RUNNING = 0;
     public static final int STATUS_FINISHED = 1;
     public static final int STATUS_ERROR = 2;
+
+    private DatabaseHelper databaseHelper;
 
 
     public IntentServiceInstagram() {
@@ -85,6 +88,8 @@ public class IntentServiceInstagram extends IntentService {
 
     private void instagramUserSearch(Intent intent)
     {
+        ResultReceiver receiver = intent.getParcelableExtra(IntentSwitchVariables.receiver);
+        Bundle bundle = new Bundle();
         try {
             String accessToken = intent.getStringExtra(IntentSwitchVariables.InstagramAccessToken);
             String username = intent.getStringExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED);
@@ -102,12 +107,17 @@ public class IntentServiceInstagram extends IntentService {
             {
                 inputStream = new BufferedInputStream(urlConnection.getInputStream());
                 String response = convertInputStreamToString(inputStream);
-                Log.i(UtilityVariables.tag,"response json code "+response);
+                bundle.putString(IntentSwitchVariables.InstagramAccessToken, intent.getStringExtra(IntentSwitchVariables.InstagramAccessToken));
+                bundle.putString(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED, intent.getStringExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED));
+                bundle.putInt(IntentSwitchVariables.request,IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH);
+                bundle.putString(IntentSwitchVariables.INSTAGRAM_USER_SEARCH_RESULT_JSON,response);
+                receiver.send(STATUS_FINISHED, bundle);
             }
 
         } catch (Exception ex) {
             ex.printStackTrace();
             Log.i(UtilityVariables.tag,"error in instagramUserSearch function "+IntentServiceInstagram.class+"  :"+ex.toString());
+            receiver.send(STATUS_ERROR, bundle);
         }
 
     }
@@ -116,8 +126,10 @@ public class IntentServiceInstagram extends IntentService {
     {
         ResultReceiver receiver = intent.getParcelableExtra(IntentSwitchVariables.receiver);
         String codeUrl = intent.getStringExtra(IntentSwitchVariables.url);
+        String email = intent.getStringExtra(IntentSwitchVariables.email);
         String code = codeUrl.split("=")[1];
         Bundle bundle = new Bundle();
+        databaseHelper = new DatabaseHelper(this);
 
         try {
             URL url = new URL(TOKEN_URL);
@@ -134,7 +146,6 @@ public class IntentServiceInstagram extends IntentService {
                     "&code=" + code);
             writer.flush();
             String response = streamToString(urlConnection.getInputStream());
-            Log.i(UtilityVariables.tag, "response " + response);
             JSONObject jsonObj = (JSONObject) new JSONTokener(response).nextValue();
 
             String mAccessToken = jsonObj.getString("access_token");

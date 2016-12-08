@@ -13,9 +13,13 @@ public class IntentSwitchVariables {
     public static final String url = "url";
     public static final String request = "request";
     public static final String receiver = "receiver";
+    public static final String password = "password";
 
 
     public static final int REQUEST_VINE_USER_SEARCH = 1;
+    public static final int REQUEST_VINE_ACCESS_TOKEN = 2;
+
+
     public static final int REQUEST_INSTAGRAM_USER_SEARCH = 11;
 
 
@@ -46,6 +50,12 @@ public class IntentSwitchVariables {
 
     public static final String InstagramLoginCode = "InstagramLoginCode";
     public static final String InstagramAccessToken = "InstagramAccessToken";
+    public static final String  INSTAGRAM_USER_SEARCH_RESULT_JSON = "INSTAGRAM_USER_SEARCH_RESULT_JSON";
+
+
+
+    public static final String VINE_ACCESS_TOKEN = "VINE_ACCESS_TOKEN";
+    public static final String VINE_USER_SEARCH_RESULT_JSON = "VINE_USER_SEARCH_RESULT_JSON";
 
 
 

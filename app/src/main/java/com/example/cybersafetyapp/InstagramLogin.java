@@ -57,10 +57,8 @@ public class InstagramLogin extends AppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String url = request.getUrl().toString();
-                Log.i(UtilityVariables.tag,"overriding url page loading page: "+url);
                 if(url.startsWith(UtilityVariables.INSTAGRAM_CALLBACK_URL))
                 {
-                    Log.i(UtilityVariables.tag,"redirect url found: "+url);
                     Intent intent = new Intent(WaitForToken.class.getName());
                     intent.putExtra(IntentSwitchVariables.OSNName,IntentSwitchVariables.INSTAGRAM);
                     intent.putExtra(IntentSwitchVariables.InstagramLoginCode,url);
@@ -78,7 +76,6 @@ public class InstagramLogin extends AppCompatActivity {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 if(url.startsWith(UtilityVariables.INSTAGRAM_CALLBACK_URL))
                 {
-                    Log.i(UtilityVariables.tag,"redirect url found: "+url);
                     Intent intent = new Intent(WaitForToken.class.getName());
                     intent.putExtra(IntentSwitchVariables.OSNName,IntentSwitchVariables.INSTAGRAM);
                     intent.putExtra(IntentSwitchVariables.InstagramLoginCode,url);
@@ -102,7 +99,6 @@ public class InstagramLogin extends AppCompatActivity {
         String mAuthUrl = AUTH_URL + "?client_id=" + UtilityVariables.INSTAGRAM_CLIENT_ID + "&redirect_uri="
                 + UtilityVariables.INSTAGRAM_CALLBACK_URL + "&response_type=code&display=touch&scope=likes+comments+relationships+public_content";
         webView.loadUrl(mAuthUrl);
-        Log.i(UtilityVariables.tag,"inside instagram login activity");
     }
 
 
@@ -111,12 +107,10 @@ public class InstagramLogin extends AppCompatActivity {
     {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            Log.d(UtilityVariables.tag, "Using clearCookies code for API >=" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
             CookieManager.getInstance().removeAllCookies(null);
             CookieManager.getInstance().flush();
         } else
         {
-            Log.d(UtilityVariables.tag, "Using clearCookies code for API <" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
             CookieSyncManager cookieSyncMngr=CookieSyncManager.createInstance(context);
             cookieSyncMngr.startSync();
             CookieManager cookieManager=CookieManager.getInstance();

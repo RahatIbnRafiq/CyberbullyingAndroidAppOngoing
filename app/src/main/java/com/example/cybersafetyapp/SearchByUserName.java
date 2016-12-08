@@ -1,6 +1,7 @@
 package com.example.cybersafetyapp;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,12 +17,14 @@ public class SearchByUserName extends AppCompatActivity implements JsonResultRec
 
     private JsonResultReceiver mReceiver;
     private String email;
+    DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_by_user_name);
         Bundle messages = getIntent().getExtras();
+        databaseHelper = new DatabaseHelper(this);
         if(messages == null ||
                 messages.getString(IntentSwitchVariables.sourceClassName) == null ||
                 !messages.getString(IntentSwitchVariables.sourceClassName).equals(AddNewProfile.class.getName()))
@@ -52,22 +55,42 @@ public class SearchByUserName extends AppCompatActivity implements JsonResultRec
         //userToSearch = userToSearch.replace(" ","%20");
         //userToSearch = userToSearch.replace(".","_");
 
+
         if(radioVine.isChecked())
         {
-            mReceiver = new JsonResultReceiver(new Handler());
-            mReceiver.setReceiver(this);
-            String urlVineUserSearch = UtilityVariables.VINE_URL_USER_SEARCH+userToSearch;
-            Intent jsonIntentService = new Intent(this, IntentServiceGetJson.class);
-            jsonIntentService.putExtra(IntentSwitchVariables.url,urlVineUserSearch);
-            jsonIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
-            jsonIntentService.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_VINE_USER_SEARCH);
-            jsonIntentService.putExtra(IntentSwitchVariables.OSNName, IntentSwitchVariables.Vine);
-            startService(jsonIntentService);
+            String token = databaseHelper.getAccessTokenForGuardian(this.email,DatabaseHelper.NAME_COL_VINE_TOKEN);
+            Intent intent;
+            if(token.length() < 1)
+            {
+                intent = new Intent(this, VineLogin.class);
+            }
+            else
+            {
+                intent = new Intent(WaitForResults.class.getName());
+                intent.putExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN,token);
+            }
+
+            intent.putExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED,userToSearch);
+            intent.putExtra(IntentSwitchVariables.email,this.email);
+            intent.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_VINE_USER_SEARCH);
+            startActivity(intent);
+
         }
 
         else if (radioInstagram.isChecked())
         {
-            Intent intent = new Intent(this, InstagramLogin.class);
+
+            String token = databaseHelper.getAccessTokenForGuardian(this.email,DatabaseHelper.NAME_COL_INSTAGRAM_TOKEN);
+            Intent intent;
+            if(token.length() < 1)
+            {
+                intent = new Intent(this, InstagramLogin.class);
+            }
+            else
+            {
+                intent = new Intent(WaitForResults.class.getName());
+                intent.putExtra(IntentSwitchVariables.InstagramAccessToken,token);
+            }
             intent.putExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED,userToSearch);
             intent.putExtra(IntentSwitchVariables.email,this.email);
             intent.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH);

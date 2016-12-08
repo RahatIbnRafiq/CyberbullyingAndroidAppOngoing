@@ -13,14 +13,14 @@ public class WaitForResults extends AppCompatActivity implements JsonResultRecei
     private JsonResultReceiver mReceiver;
     public String email;
     public String usernameToBeSearched;
-    public String osnName;
+    //public String osnName;
     public int requestType;
 
     private boolean checkIfValidIntent(Bundle messages)
     {
         try {
             this.email = messages.getString(IntentSwitchVariables.email);
-            this.osnName = messages.getString(IntentSwitchVariables.OSNName);
+            //this.osnName = messages.getString(IntentSwitchVariables.OSNName);
             this.requestType = messages.getInt(IntentSwitchVariables.request);
             return true;
         }
@@ -58,9 +58,23 @@ public class WaitForResults extends AppCompatActivity implements JsonResultRecei
             startService(instagramIntentService);
 
         }
+        else if (this.requestType == IntentSwitchVariables.REQUEST_VINE_USER_SEARCH)
+        {
+            mReceiver = new JsonResultReceiver(new Handler());
+            mReceiver.setReceiver(this);
+            this.usernameToBeSearched = messages.getString(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED);
+            String vineAccessToken = messages.getString(IntentSwitchVariables.VINE_ACCESS_TOKEN);
+
+            Intent vineIntentService = new Intent(this, IntentServiceVine.class);
+            vineIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
+            vineIntentService.putExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED, this.usernameToBeSearched);
+            vineIntentService.putExtra(IntentSwitchVariables.request, this.requestType);
+            vineIntentService.putExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN, vineAccessToken);
+            startService(vineIntentService);
+        }
         else
         {
-            Log.i(UtilityVariables.tag,"class name did not match while coming to waitfortoken class: "+osnName);
+            Log.i(UtilityVariables.tag,"Something bad happened in "+this.getClass().getName()+" request type : "+this.requestType);
         }
 
     }
@@ -73,8 +87,25 @@ public class WaitForResults extends AppCompatActivity implements JsonResultRecei
                 Log.i(UtilityVariables.tag,"Running code intent service");
                 break;
             case IntentServiceGetJson.STATUS_FINISHED:
-                String accessToken = resultData.getString(IntentSwitchVariables.InstagramAccessToken);
-                Log.i(UtilityVariables.tag,"Yay! got the access token. Finally! "+accessToken);
+                int requesttype = resultData.getInt(IntentSwitchVariables.request);
+                if (requesttype == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
+                {
+                    Intent intent = new Intent(SearchResultProfiles.class.getName());
+                    intent.putExtra(IntentSwitchVariables.email,this.email);
+                    intent.putExtra(IntentSwitchVariables.request,requesttype);
+                    intent.putExtra(IntentSwitchVariables.INSTAGRAM_USER_SEARCH_RESULT_JSON,resultData.getString(IntentSwitchVariables.INSTAGRAM_USER_SEARCH_RESULT_JSON));
+                    intent.putExtra(IntentSwitchVariables.InstagramAccessToken,resultData.getString(IntentSwitchVariables.InstagramAccessToken));
+                    startActivity(intent);
+                }
+                else if (requesttype == IntentSwitchVariables.REQUEST_VINE_USER_SEARCH)
+                {
+                    Intent intent = new Intent(SearchResultProfiles.class.getName());
+                    intent.putExtra(IntentSwitchVariables.email,this.email);
+                    intent.putExtra(IntentSwitchVariables.request,requesttype);
+                    intent.putExtra(IntentSwitchVariables.VINE_USER_SEARCH_RESULT_JSON,resultData.getString(IntentSwitchVariables.VINE_USER_SEARCH_RESULT_JSON));
+                    intent.putExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN,resultData.getString(IntentSwitchVariables.VINE_ACCESS_TOKEN));
+                    startActivity(intent);
+                }
                 break;
             case IntentServiceGetJson.STATUS_ERROR:
                 String error = resultData.getString(Intent.EXTRA_TEXT);

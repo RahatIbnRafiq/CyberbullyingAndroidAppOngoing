@@ -88,10 +88,24 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <activity android:name=".WaitForResults">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.WaitForResults" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".VineLogin">
+            <intent-filter>
+                <action android:name="com.example.cybersafetyapp.VineLogin" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".MonitoringProfileList">
+            <intent-filter>
+                <action android:name="com.example.cybersafetyapp.MonitoringProfileList" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -101,6 +115,10 @@
         <service
             android:name=".IntentServiceInstagram"
             android:exported="false" />
+        <service
+            android:name=".IntentServiceVine"
+            android:exported="false" />
+
     </application>
 
 </manifest>

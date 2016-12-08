@@ -15,6 +15,7 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
     public String usernameToBeSearched;
     public String osnName;
     public int requestType;
+    DatabaseHelper databaseHelper;
 
     private boolean checkIfValidIntent(Bundle messages)
     {
@@ -37,6 +38,7 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wait_for_token);
         Bundle messages = getIntent().getExtras();
+        databaseHelper = new DatabaseHelper(this);
         if(!this.checkIfValidIntent(messages))
         {
             Intent intent = new Intent(Dashboard.class.getName());
@@ -55,6 +57,7 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
             mReceiver = new JsonResultReceiver(new Handler());
             mReceiver.setReceiver(this);
             Intent instagramIntentService = new Intent(this, IntentServiceInstagram.class);
+            instagramIntentService.putExtra(IntentSwitchVariables.email,email);
             instagramIntentService.putExtra(IntentSwitchVariables.url,url);
             instagramIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
             instagramIntentService.putExtra(IntentSwitchVariables.request, IntentServiceInstagram.GET_TOKEN);
@@ -79,7 +82,7 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
                 String accessToken = resultData.getString(IntentSwitchVariables.InstagramAccessToken);
                 if(this.requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
                 {
-                    Log.i(UtilityVariables.tag,"Yay! got the access token for Instagram. Finally! "+accessToken);
+                    databaseHelper.insertAccessTokenValue(DatabaseHelper.NAME_TABLE_GUARDIAN_INFORMATION,this.email,accessToken,DatabaseHelper.NAME_COL_INSTAGRAM_TOKEN);
                     Intent intent = new Intent(WaitForResults.class.getName());
                     intent.putExtra(IntentSwitchVariables.email,this.email);
                     intent.putExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED,this.usernameToBeSearched);
