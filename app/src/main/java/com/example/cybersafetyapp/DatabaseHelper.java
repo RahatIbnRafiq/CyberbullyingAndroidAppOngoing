@@ -169,6 +169,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public long deleteMonitoredUserFromTable(String tableName,String email, String userid)
+    {
+        try {
+            Log.i(UtilityVariables.tag," remove monitored user from table");
+            Log.i(UtilityVariables.tag,email+","+userid+","+tableName);
+            String where = NAME_COL_EMAIL + " = ? and "+NAME_COL_USERID+" = ?";
+            String[] whereArgs = { email,userid };
+
+            SQLiteDatabase db = this.getWritableDatabase();
+            return db.delete(tableName, where, whereArgs);
+        }
+        catch (Exception e)
+        {
+            return -1;
+
+        }
+    }
+
     public long insertMonitoringTable(String email,String userid,String username, String tableName)
     {
         try {

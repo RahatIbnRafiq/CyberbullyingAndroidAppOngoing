@@ -19,11 +19,15 @@ public class IntentSwitchVariables {
     public static final int REQUEST_VINE_USER_SEARCH = 1;
     public static final int REQUEST_VINE_ACCESS_TOKEN = 2;
     public static final int REQUEST_VINE_USER_DETAIL = 3;
+    public static final int REQUEST_VINE_POST_INFORMATION = 4;
+    public static final int REQUEST_VINE_POST_DETAILS = 5;
 
 
     public static final int REQUEST_INSTAGRAM_USER_SEARCH = 11;
     public static final int REQUEST_INSTAGRAM_ACCESS_TOKEN = 12;
     public static final int REQUEST_INSTAGRAM_USER_DETAIL = 13;
+    public static final int REQUEST_INSTAGRAM_POST_INFORMATION = 14;
+    public static final int REQUEST_INSTAGRAM_POST_DETAILS = 15;
 
 
 
@@ -55,16 +59,21 @@ public class IntentSwitchVariables {
     public static final String InstagramAccessToken = "InstagramAccessToken";
     public static final String  INSTAGRAM_USER_SEARCH_RESULT_JSON = "INSTAGRAM_USER_SEARCH_RESULT_JSON";
     public static final String  INSTAGRAM_USER_DETAIL_RESULT_JSON = "INSTAGRAM_USER_DETAIL_RESULT_JSON";
+    public static final String  INSTAGRAM_POST_INFORMATION_RESULT_JSON = "INSTAGRAM_POST_INFORMATION_RESULT_JSON";
+    public static final String  INSTAGRAM_POST_DETAILS_RESULT_JSON = "INSTAGRAM_POST_DETAILS_RESULT_JSON";
 
 
 
     public static final String VINE_ACCESS_TOKEN = "VINE_ACCESS_TOKEN";
     public static final String VINE_USER_SEARCH_RESULT_JSON = "VINE_USER_SEARCH_RESULT_JSON";
     public static final String VINE_USER_DETAIL_RESULT_JSON = "VINE_USER_DETAIL_RESULT_JSON";
+    public static final String VINE_POST_INFORMATION_RESULT_JSON = "VINE_POST_INFORMATION_RESULT_JSON";
+    public static final String VINE_POST_DETAILS_RESULT_JSON = "VINE_POST_DETAILS_RESULT_JSON";
 
 
 
     public static final String USERNAME_TO_BE_SEARCHED = "USERNAME_TO_BE_SEARCHED";
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     public static final String USERID = "USERID";
+    public static final String POSTID = "POSTID";
 }

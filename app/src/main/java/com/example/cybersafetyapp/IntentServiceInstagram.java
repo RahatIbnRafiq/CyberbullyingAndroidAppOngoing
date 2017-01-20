@@ -199,6 +199,85 @@ public class IntentServiceInstagram extends IntentService {
         }
     }
 
+    private void getUserPostInformation(Intent intent)
+    {
+        ResultReceiver receiver = intent.getParcelableExtra(IntentSwitchVariables.receiver);
+        Bundle bundle = new Bundle();
+        try {
+
+            String accessToken = intent.getStringExtra(IntentSwitchVariables.InstagramAccessToken);
+            String userid = intent.getStringExtra(IntentSwitchVariables.USERID);
+
+
+            InputStream inputStream = null;
+            HttpURLConnection urlConnection = null;
+
+            URL url = new URL("https://api.instagram.com/v1/users/"+userid+"/media/recent/?access_token="+accessToken);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+
+            int statusCode = urlConnection.getResponseCode();
+            Log.i(UtilityVariables.tag,"status code "+statusCode);
+            if(statusCode == 200)
+            {
+                inputStream = new BufferedInputStream(urlConnection.getInputStream());
+                String response = convertInputStreamToString(inputStream);
+                //Log.i(UtilityVariables.tag,"User's post information found for instagram: "+response);
+                bundle.putString(IntentSwitchVariables.InstagramAccessToken, intent.getStringExtra(IntentSwitchVariables.InstagramAccessToken));
+                bundle.putString(IntentSwitchVariables.USERID, userid);
+                bundle.putInt(IntentSwitchVariables.request,IntentSwitchVariables.REQUEST_INSTAGRAM_POST_INFORMATION);
+                bundle.putString(IntentSwitchVariables.INSTAGRAM_POST_INFORMATION_RESULT_JSON,response);
+                receiver.send(STATUS_FINISHED, bundle);
+            }
+        }catch (Exception ex)
+        {
+            Log.i(UtilityVariables.tag,"Exception in getUserPostInformation function in IntentServiceInstagram : "+ex.toString());
+            receiver.send(STATUS_ERROR, bundle);
+        }
+
+    }
+
+
+    private void getUserPostDetail(Intent intent)
+    {
+        ResultReceiver receiver = intent.getParcelableExtra(IntentSwitchVariables.receiver);
+        Bundle bundle = new Bundle();
+        try {
+
+            String accessToken = intent.getStringExtra(IntentSwitchVariables.InstagramAccessToken);
+            String postid = intent.getStringExtra(IntentSwitchVariables.POSTID);
+
+
+            InputStream inputStream = null;
+            HttpURLConnection urlConnection = null;
+
+            URL url = new URL("https://api.instagram.com/v1/media/"+postid+"/comments/?access_token="+accessToken);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+
+            int statusCode = urlConnection.getResponseCode();
+            Log.i(UtilityVariables.tag,"status code "+statusCode);
+            if(statusCode == 200)
+            {
+                inputStream = new BufferedInputStream(urlConnection.getInputStream());
+                String response = convertInputStreamToString(inputStream);
+                //Log.i(UtilityVariables.tag,"User's post comments found for instagram: "+response);
+                bundle.putString(IntentSwitchVariables.InstagramAccessToken, intent.getStringExtra(IntentSwitchVariables.InstagramAccessToken));
+                bundle.putString(IntentSwitchVariables.POSTID, postid);
+                bundle.putInt(IntentSwitchVariables.request,IntentSwitchVariables.REQUEST_INSTAGRAM_POST_DETAILS);
+                bundle.putString(IntentSwitchVariables.INSTAGRAM_POST_DETAILS_RESULT_JSON,response);
+                receiver.send(STATUS_FINISHED, bundle);
+            }
+        }catch (Exception ex)
+        {
+            Log.i(UtilityVariables.tag,"Exception in getUserPostDetail function in IntentServiceInstagram : "+ex.toString());
+            receiver.send(STATUS_ERROR, bundle);
+        }
+
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         int requestType = intent.getIntExtra(IntentSwitchVariables.request,0);
@@ -214,6 +293,15 @@ public class IntentServiceInstagram extends IntentService {
         {
             getUserInformation(intent);
         }
+        else if (requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_POST_INFORMATION)
+        {
+            getUserPostInformation(intent);
+        }
+        else if (requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_POST_DETAILS)
+        {
+            getUserPostDetail(intent);
+        }
+
 
 
 

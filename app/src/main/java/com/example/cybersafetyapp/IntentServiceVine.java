@@ -198,6 +198,60 @@ public class IntentServiceVine extends IntentService {
         }
     }
 
+    private void getUserPostInformation(Intent intent)
+    {
+        ResultReceiver receiver = intent.getParcelableExtra(IntentSwitchVariables.receiver);
+        Bundle bundle = new Bundle();
+        try {
+            InputStream inputStream = null;
+            HttpURLConnection urlConnection = null;
+            String urlString = UtilityVariables.VINE_URL_USER_TIMELINE+ intent.getStringExtra(IntentSwitchVariables.USERID)+
+                    "?vine-session-id="+intent.getStringExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN);
+            URL url = new URL(urlString);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            inputStream = new BufferedInputStream(urlConnection.getInputStream());
+            String response = streamToString(inputStream);
+            //Log.i(UtilityVariables.tag,"Post information found for vine: "+response);
+            bundle.putString(IntentSwitchVariables.VINE_POST_INFORMATION_RESULT_JSON,response);
+            bundle.putString(IntentSwitchVariables.USERID,intent.getStringExtra(IntentSwitchVariables.USERID));
+            bundle.putString(IntentSwitchVariables.VINE_ACCESS_TOKEN,intent.getStringExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN));
+            bundle.putInt(IntentSwitchVariables.request,IntentSwitchVariables.REQUEST_VINE_POST_INFORMATION);
+            receiver.send(STATUS_FINISHED, bundle);
+        }catch (Exception ex)
+        {
+            Log.i(UtilityVariables.tag,"Exception in getUserPostInformation function in IntentServiceVine : "+ex.toString());
+            receiver.send(STATUS_ERROR, bundle);
+        }
+    }
+
+    private void getUserPostDetails(Intent intent)
+    {
+        ResultReceiver receiver = intent.getParcelableExtra(IntentSwitchVariables.receiver);
+        Bundle bundle = new Bundle();
+        try {
+            InputStream inputStream = null;
+            HttpURLConnection urlConnection = null;
+            String urlString = UtilityVariables.VINE_URL_POST_COMMENTS+ intent.getStringExtra(IntentSwitchVariables.POSTID)+
+                    "/comments?vine-session-id="+intent.getStringExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN);
+            URL url = new URL(urlString);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            inputStream = new BufferedInputStream(urlConnection.getInputStream());
+            String response = streamToString(inputStream);
+            //Log.i(UtilityVariables.tag,"Post details found for vine: "+response);
+            bundle.putString(IntentSwitchVariables.VINE_POST_DETAILS_RESULT_JSON,response);
+            bundle.putString(IntentSwitchVariables.POSTID,intent.getStringExtra(IntentSwitchVariables.POSTID));
+            bundle.putString(IntentSwitchVariables.VINE_ACCESS_TOKEN,intent.getStringExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN));
+            bundle.putInt(IntentSwitchVariables.request,IntentSwitchVariables.REQUEST_VINE_POST_DETAILS);
+            receiver.send(STATUS_FINISHED, bundle);
+        }catch (Exception ex)
+        {
+            Log.i(UtilityVariables.tag,"Exception in getUserPostDetails function in IntentServiceVine : "+ex.toString());
+            receiver.send(STATUS_ERROR, bundle);
+        }
+    }
+
 
 
     @Override
@@ -217,6 +271,16 @@ public class IntentServiceVine extends IntentService {
         else if (requestType == IntentSwitchVariables.REQUEST_VINE_USER_DETAIL)
         {
             getUserInformation(intent);
+        }
+
+        else if (requestType == IntentSwitchVariables.REQUEST_VINE_POST_INFORMATION)
+        {
+            getUserPostInformation(intent);
+        }
+
+        else if (requestType == IntentSwitchVariables.REQUEST_VINE_POST_DETAILS)
+        {
+            getUserPostDetails(intent);
         }
     }
 }

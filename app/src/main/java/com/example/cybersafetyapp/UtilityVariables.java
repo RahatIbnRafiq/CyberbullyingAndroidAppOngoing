@@ -6,6 +6,9 @@ package com.example.cybersafetyapp;
 
 public class UtilityVariables {
 
+
+    public static boolean isAlarmOn = false;
+
     public static final String LogIn = "LogIn";
     public static final String Dashboard = "Dashboard";
     public static final String tag = "cybersafetyapp";
@@ -25,6 +28,8 @@ public class UtilityVariables {
 
     public static final String VINE_URL_USER_SEARCH = "https://api.vineapp.com/search/users/";
     public static final String VINE_URL_USER_DETAIL = "https://api.vineapp.com/users/profiles/";
+    public static final String VINE_URL_USER_TIMELINE = "https://api.vineapp.com/timelines/users/";
+    public static final String VINE_URL_POST_COMMENTS = "https://api.vineapp.com/posts/";
 
 
 

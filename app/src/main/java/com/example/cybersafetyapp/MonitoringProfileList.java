@@ -96,11 +96,18 @@ public class MonitoringProfileList extends AppCompatActivity implements View.OnC
         tr_head.addView(label_username);
 
         Button clickToViewPosts = new Button(this);
-        clickToViewPosts.setText("See Details");
+        clickToViewPosts.setText("Details");
         clickToViewPosts.setTextColor(Color.WHITE);
         clickToViewPosts.setPadding(0,15,0,15);
         clickToViewPosts.setOnClickListener(this);
         tr_head.addView(clickToViewPosts);
+
+        Button removeUser = new Button(this);
+        removeUser.setText("Remove");
+        removeUser.setTextColor(Color.WHITE);
+        removeUser.setPadding(0,15,2,15);
+        removeUser.setOnClickListener(this);
+        tr_head.addView(removeUser);
 
 
 
@@ -115,38 +122,58 @@ public class MonitoringProfileList extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View v) {
-        Button clickToViewPosts = (Button)v;
-        TableRow row = (TableRow)clickToViewPosts.getParent();
-        TextView osnName = (TextView)row.getChildAt(0);
-        TextView username = (TextView)row.getChildAt(1);
-        TextView userid = (TextView)row.getChildAt(3);
-        if(osnName.getText().toString().equals("Instagram"))
+        Button buttonClicked = (Button)v;
+        if(buttonClicked.getText().toString().equals("Remove"))
         {
-            Log.i(UtilityVariables.tag,"the user is from instagram");
-            mReceiver = new JsonResultReceiver(new Handler());
-            mReceiver.setReceiver(this);
-            Intent instagramIntentService = new Intent(this, IntentServiceInstagram.class);
-            instagramIntentService.putExtra(IntentSwitchVariables.USERID,userid.getText().toString());
-            instagramIntentService.putExtra(IntentSwitchVariables.InstagramAccessToken,databaseHelper.getAccessTokenForGuardian(this.email,DatabaseHelper.NAME_COL_INSTAGRAM_TOKEN));
-            instagramIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
-            instagramIntentService.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_INSTAGRAM_USER_DETAIL);
-            startService(instagramIntentService);
+            Log.i(UtilityVariables.tag,"Remove user button was clicked.");
+            TableRow row = (TableRow) buttonClicked.getParent();
+            TextView osnName = (TextView) row.getChildAt(0);
+            TextView username = (TextView) row.getChildAt(1);
+            TextView userid = (TextView) row.getChildAt(4);
+            if (osnName.getText().toString().equals("Instagram"))
+            {
+                this.databaseHelper.deleteMonitoredUserFromTable(this.databaseHelper.NAME_TABLE_INSTAGRAM_MONITORING_USER_TABLE,
+                        this.email,userid.getText().toString());
+            }
+            else if (osnName.getText().toString().equals("Vine"))
+            {
+                this.databaseHelper.deleteMonitoredUserFromTable(this.databaseHelper.NAME_TABLE_VINE_MONITORING_USER_TABLE,
+                        this.email,userid.getText().toString());
 
+            }
+            Intent intent = new Intent(Dashboard.class.getName());
+            intent.putExtra(IntentSwitchVariables.email,this.email);
+            startActivity(intent);
         }
-        else if (osnName.getText().toString().equals("Vine"))
-        {
-            Log.i(UtilityVariables.tag,"the user is from vine");
-            mReceiver = new JsonResultReceiver(new Handler());
-            mReceiver.setReceiver(this);
-            Intent vineIntentService = new Intent(this, IntentServiceVine.class);
-            vineIntentService.putExtra(IntentSwitchVariables.USERID,userid.getText().toString());
-            vineIntentService.putExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN,databaseHelper.getAccessTokenForGuardian(this.email,DatabaseHelper.NAME_COL_VINE_TOKEN));
-            vineIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
-            vineIntentService.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_VINE_USER_DETAIL);
-            startService(vineIntentService);
+        else {
+            TableRow row = (TableRow) buttonClicked.getParent();
+            TextView osnName = (TextView) row.getChildAt(0);
+            TextView username = (TextView) row.getChildAt(1);
+            TextView userid = (TextView) row.getChildAt(4);
+            if (osnName.getText().toString().equals("Instagram")) {
+                Log.i(UtilityVariables.tag, "the user is from instagram");
+                mReceiver = new JsonResultReceiver(new Handler());
+                mReceiver.setReceiver(this);
+                Intent instagramIntentService = new Intent(this, IntentServiceInstagram.class);
+                instagramIntentService.putExtra(IntentSwitchVariables.USERID, userid.getText().toString());
+                instagramIntentService.putExtra(IntentSwitchVariables.InstagramAccessToken, databaseHelper.getAccessTokenForGuardian(this.email, DatabaseHelper.NAME_COL_INSTAGRAM_TOKEN));
+                instagramIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
+                instagramIntentService.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_INSTAGRAM_USER_DETAIL);
+                startService(instagramIntentService);
 
+            } else if (osnName.getText().toString().equals("Vine")) {
+                Log.i(UtilityVariables.tag, "the user is from vine");
+                mReceiver = new JsonResultReceiver(new Handler());
+                mReceiver.setReceiver(this);
+                Intent vineIntentService = new Intent(this, IntentServiceVine.class);
+                vineIntentService.putExtra(IntentSwitchVariables.USERID, userid.getText().toString());
+                vineIntentService.putExtra(IntentSwitchVariables.VINE_ACCESS_TOKEN, databaseHelper.getAccessTokenForGuardian(this.email, DatabaseHelper.NAME_COL_VINE_TOKEN));
+                vineIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
+                vineIntentService.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_VINE_USER_DETAIL);
+                startService(vineIntentService);
+
+            }
         }
-        //Log.i(UtilityVariables.tag,osnName.getText().toString()+","+username.getText().toString());
 
     }
 
