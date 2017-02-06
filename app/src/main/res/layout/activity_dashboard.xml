@@ -22,7 +22,6 @@
         android:id="@+id/textview_dashboard_check_notifications" />
 
     <Button
-        android:text="@string/button_dashboard_check_notifications"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="14dp"

@@ -2,8 +2,11 @@ package com.example.cybersafetyapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class Notifications extends AppCompatActivity {
 
@@ -11,6 +14,10 @@ public class Notifications extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifications);
+        ArrayList<CommentFeedback> feedbackCommentList = new ArrayList<>();
+        feedbackCommentList = (ArrayList<CommentFeedback>) getIntent().getSerializableExtra(IntentSwitchVariables.FEEDBACK_COMMENT_LIST);
+
+
     }
 
 

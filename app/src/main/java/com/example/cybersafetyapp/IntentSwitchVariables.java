@@ -14,6 +14,7 @@ public class IntentSwitchVariables {
     public static final String request = "request";
     public static final String receiver = "receiver";
     public static final String password = "password";
+    public static final String FEEDBACK_COMMENT_LIST = "ffedbackCommentList";
 
 
     public static final int REQUEST_VINE_USER_SEARCH = 1;
