@@ -14,8 +14,18 @@ public class Notifications extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifications);
-        ArrayList<CommentFeedback> feedbackCommentList = new ArrayList<>();
-        feedbackCommentList = (ArrayList<CommentFeedback>) getIntent().getSerializableExtra(IntentSwitchVariables.FEEDBACK_COMMENT_LIST);
+        ArrayList<CommentFeedback> feedbackCommentList = this.getIntent().getParcelableArrayListExtra(IntentSwitchVariables.FEEDBACK_COMMENT_LIST);
+        if(feedbackCommentList != null)
+        {
+            for(int i=0;i<feedbackCommentList.size();i++)
+            {
+                Log.i(UtilityVariables.tag,"Notification page:");
+                for(int j=0;j<feedbackCommentList.get(i).comments.size();j++)
+                {
+                    Log.i(UtilityVariables.tag,feedbackCommentList.get(i).comments.get(j).toString());
+                }
+            }
+        }
 
 
     }

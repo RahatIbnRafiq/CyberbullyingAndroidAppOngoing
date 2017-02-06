@@ -62,11 +62,11 @@ public class Dashboard extends AppCompatActivity {
         notificationIntent.putExtra(IntentSwitchVariables.email,this.email);
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         Calendar calendar = Calendar.getInstance();
-        //Long alertTime = calendar.getTimeInMillis()+10*1000;
+        Long alertTime = calendar.getTimeInMillis()+10*1000;
         if(!UtilityVariables.isAlarmOn)
         {
-            //alarmManager.set(AlarmManager.RTC_WAKEUP,alertTime,PendingIntent.getService(this,1,notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT));
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),10000,PendingIntent.getService(this,1,notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT));
+            alarmManager.set(AlarmManager.RTC_WAKEUP,alertTime,PendingIntent.getService(this,1,notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT));
+            //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),10000,PendingIntent.getService(this,1,notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT));
             UtilityVariables.isAlarmOn = true;
             this.notificationButton.setText(this.alarmOff);
         }

@@ -30,6 +30,7 @@ public class IntentServiceNotification extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        this.feedbackList = new ArrayList<>();
 
         Bundle messages = intent.getExtras();
         //Log.i(UtilityVariables.tag,"Inside "+getClass().getSimpleName()+" email is: "+messages.getString(IntentSwitchVariables.email));
@@ -55,12 +56,13 @@ public class IntentServiceNotification extends IntentService {
 
     public void createNotification(Context context, String msg, String msgText, String msgAlert)
     {
+
+
         Intent intent = new Intent(context,Notifications.class);
         intent.putExtra(IntentSwitchVariables.email,this.email);
-        if(this.feedbackList != null)
-        {
-            intent.putExtra(IntentSwitchVariables.FEEDBACK_COMMENT_LIST, this.feedbackList);
-        }
+
+        intent.putExtra(IntentSwitchVariables.FEEDBACK_COMMENT_LIST, this.feedbackList);
+
         PendingIntent notificationIntent = PendingIntent.getActivity(context,0,intent,0);
 
         NotificationCompat.Builder mBuilder =
@@ -127,23 +129,23 @@ public class IntentServiceNotification extends IntentService {
             }
             if(newComments.size()>0)
             {
-                //CommentFeedback commentFeedback = new CommentFeedback();
+                CommentFeedback commentFeedback = new CommentFeedback();
 
                 double[]featureValues = this.classifier.getFeatureValues(newComments);
                 double prediction = this.classifier.predict(featureValues);
 
-                //commentFeedback.comments.addAll(newComments);
-                //commentFeedback.featureValues = featureValues;
-                //commentFeedback.predictedValue = prediction;
-                //feedbackList.add(commentFeedback);
+                commentFeedback.comments.addAll(newComments);
+                commentFeedback.featureValues = featureValues;
+                commentFeedback.predictedValue = prediction;
+                feedbackList.add(commentFeedback);
                 if (Math.round(prediction) == 1)
                 {
                     this.instagramNumberOfBullying++;
                 }
 
-                //Log.i(UtilityVariables.tag,""+featureValues[0]+","+featureValues[1]+","+featureValues[2]);
-                //Log.i(UtilityVariables.tag,this.classifier.predict(featureValues)+": is the prediction");
-                //Log.i(UtilityVariables.tag,"__________________________________________________________");
+                Log.i(UtilityVariables.tag,""+featureValues[0]+","+featureValues[1]+","+featureValues[2]);
+                Log.i(UtilityVariables.tag,this.classifier.predict(featureValues)+": is the prediction");
+                Log.i(UtilityVariables.tag,"__________________________________________________________");
             }
 
 

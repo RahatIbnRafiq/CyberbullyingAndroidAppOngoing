@@ -62,7 +62,7 @@ public class APIWorks {
                     String createdTime = record.optString("created_time");
                     String commentText = record.optString("text");
                     String fromUserName = record.getJSONObject("from").getString("username");
-                    //Log.i(UtilityVariables.tag,commentid+","+commentText+","+createdTime);
+                    Log.i(UtilityVariables.tag,commentid+","+commentText+","+createdTime);
                     comments.add(new Comment(commentid,createdTime,commentText,fromUserName));
 
                 }
