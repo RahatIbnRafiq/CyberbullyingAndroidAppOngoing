@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
@@ -30,7 +31,6 @@ public class IntentServiceNotification extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        this.feedbackList = new ArrayList<>();
 
         Bundle messages = intent.getExtras();
         //Log.i(UtilityVariables.tag,"Inside "+getClass().getSimpleName()+" email is: "+messages.getString(IntentSwitchVariables.email));
@@ -43,6 +43,7 @@ public class IntentServiceNotification extends IntentService {
             Log.i(UtilityVariables.tag,e.toString());
         }
         instagramNotificationCheck();
+        //createNotification(this, "Possible Bullying!!", "On Instagram!!"+this.instagramNumberOfBullying+" instances", "Possible Bullying!");
 
         if(this.instagramNumberOfBullying > 0)
         {
@@ -56,14 +57,11 @@ public class IntentServiceNotification extends IntentService {
 
     public void createNotification(Context context, String msg, String msgText, String msgAlert)
     {
-
-
         Intent intent = new Intent(context,Notifications.class);
         intent.putExtra(IntentSwitchVariables.email,this.email);
-
         intent.putExtra(IntentSwitchVariables.FEEDBACK_COMMENT_LIST, this.feedbackList);
 
-        PendingIntent notificationIntent = PendingIntent.getActivity(context,0,intent,0);
+        PendingIntent notificationIntent = PendingIntent.getActivity(context,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
@@ -93,7 +91,6 @@ public class IntentServiceNotification extends IntentService {
         APIWorks apiworks = APIWorks.getInstance();
         ArrayList<Post> posts = null;
         for(String userid:useridList) {
-            //Log.i(UtilityVariables.tag, "monitoring Instagram userid: " + userid);
             posts = apiworks.instagramGettingUserPosts(userid, accessToken);
         }
         if(posts != null)
@@ -137,24 +134,21 @@ public class IntentServiceNotification extends IntentService {
                 commentFeedback.comments.addAll(newComments);
                 commentFeedback.featureValues = featureValues;
                 commentFeedback.predictedValue = prediction;
-                feedbackList.add(commentFeedback);
+                this.feedbackList.add(commentFeedback);
+
+
                 if (Math.round(prediction) == 1)
                 {
                     this.instagramNumberOfBullying++;
+                    commentFeedback.classifierResult= "Bullying";
+
                 }
-
-                Log.i(UtilityVariables.tag,""+featureValues[0]+","+featureValues[1]+","+featureValues[2]);
-                Log.i(UtilityVariables.tag,this.classifier.predict(featureValues)+": is the prediction");
-                Log.i(UtilityVariables.tag,"__________________________________________________________");
+                else
+                {
+                    commentFeedback.classifierResult= "Not Bullying";
+                }
             }
-
-
         }
-
-
-
-
-
     }
 
 

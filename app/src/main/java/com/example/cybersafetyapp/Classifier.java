@@ -54,7 +54,7 @@ public class Classifier {
         double negativeWordPerNegativeComment = 0;
         for(String comment:comments)
         {
-            Log.i(UtilityVariables.tag,comment);
+            //Log.i(UtilityVariables.tag,comment);
             boolean isNegative = false;
             comment = comment.toLowerCase().trim();
             comment = comment.replaceAll("[^a-z]+", " ");
