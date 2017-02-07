@@ -8,7 +8,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
@@ -16,6 +18,8 @@ import java.util.StringTokenizer;
  */
 
 public class Classifier {
+    private static final int EPOCH = 10;
+    private static final double LEARNING_RATE = 0.1;
 
     private static Classifier instance = null;
     private static ArrayList<String> negativeWordList;
@@ -80,6 +84,33 @@ public class Classifier {
         featureValues[2] = negativeCommentPercentage;
         featureValues[3] = negativeWordPerNegativeComment;
         return featureValues;
+    }
+
+
+    public void updateClassifier(ArrayList<CommentFeedback> feedbacks)
+    {
+        //Log.i(UtilityVariables.tag,"Feature values in "+this.getClass().getSimpleName()+" : "+ Arrays.toString(feedback.featureValues));
+        //Log.i(UtilityVariables.tag,"Prediction value comming  in "+this.getClass().getSimpleName()+" : "+ feedback.predictedValue);
+        //Log.i(UtilityVariables.tag,"Update classifier: feedback value "+feedback.feedbackValue+", predicted value: "+feedback.predictedValue);
+
+        for(int epoch=0;epoch<this.EPOCH;epoch++)
+        {
+            double sum_error = 0.0;
+            for(int j=0;j<feedbacks.size();j++)
+            {
+                CommentFeedback feedback = feedbacks.get(j);
+                double yhat = this.predict(feedback.featureValues);
+                double error = feedback.feedbackValue - yhat;
+                sum_error += error*error;
+                for(int i=0;i<feedback.featureValues.length;i++)
+                {
+                    this.coefficients[i] = this.coefficients[i]*this.LEARNING_RATE*error*feedback.featureValues[i]*yhat*(1.0-yhat);
+                }
+
+            }
+            Log.i(UtilityVariables.tag,"Updating classifier: epoch: "+epoch+" sum error: "+sum_error);
+
+        }
     }
 
     private void streamToString(InputStream is) throws IOException {

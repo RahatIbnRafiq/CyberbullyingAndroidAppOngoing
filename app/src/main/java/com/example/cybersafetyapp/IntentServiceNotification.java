@@ -11,6 +11,7 @@ import android.util.Log;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Set;
 
@@ -135,11 +136,13 @@ public class IntentServiceNotification extends IntentService {
                 commentFeedback.featureValues = featureValues;
                 commentFeedback.predictedValue = prediction;
                 this.feedbackList.add(commentFeedback);
+                Log.i(UtilityVariables.tag,"Feature values in "+this.getClass().getSimpleName()+" : "+ Arrays.toString(featureValues));
+                Log.i(UtilityVariables.tag,"Prediction value in "+this.getClass().getSimpleName()+" : "+ prediction);
 
-
+                this.instagramNumberOfBullying++;
                 if (Math.round(prediction) == 1)
                 {
-                    this.instagramNumberOfBullying++;
+
                     commentFeedback.classifierResult= "Bullying";
 
                 }

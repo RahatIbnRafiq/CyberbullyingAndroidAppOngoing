@@ -14,4 +14,6 @@ public class ToastMessagesVariables {
     public static final String RegistrationSuccess = "Congrats! Registration is successful";
     public static final String AlreadyMonitoringEnough = "You are already monitoring two users for this social network";
 
+    public static final String THANK_YOU_FEEDBACK = "Thanks for the feedback!";
+
 }
