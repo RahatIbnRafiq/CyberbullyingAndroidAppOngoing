@@ -14,6 +14,7 @@ public class IntentSwitchVariables {
     public static final String request = "request";
     public static final String receiver = "receiver";
     public static final String password = "password";
+    public static final String phone_number = "phone_number";
     public static final String FEEDBACK_COMMENT_LIST = "ffedbackCommentList";
 
 
@@ -29,6 +30,9 @@ public class IntentSwitchVariables {
     public static final int REQUEST_INSTAGRAM_USER_DETAIL = 13;
     public static final int REQUEST_INSTAGRAM_POST_INFORMATION = 14;
     public static final int REQUEST_INSTAGRAM_POST_DETAILS = 15;
+
+    public static final int REQUEST_SERVER_GUARDIAN_LOGIN = 21;
+    public static final int REQUEST_SERVER_GUARDIAN_REGISTER = 22;
 
 
 
@@ -77,4 +81,13 @@ public class IntentSwitchVariables {
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     public static final String USERID = "USERID";
     public static final String POSTID = "POSTID";
+
+
+
+    public static final String SERVER_RESPONSE_SUCCESS = "success";
+    public static final String SERVER_RESPONSE_MESSAGE = "message";
+
+
+
+
 }

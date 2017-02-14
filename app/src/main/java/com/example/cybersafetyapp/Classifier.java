@@ -18,11 +18,12 @@ import java.util.StringTokenizer;
  */
 
 public class Classifier {
-    private static final int EPOCH = 10;
+    private static final int EPOCH = 50;
     private static final double LEARNING_RATE = 0.1;
 
     private static Classifier instance = null;
     private static ArrayList<String> negativeWordList;
+    private ArrayList<ClassifierTrainingData> trainingDataList;
 
     private double [] coefficients;
 
@@ -30,7 +31,12 @@ public class Classifier {
     {
         InputStream is = context.getResources().openRawResource(R.raw.negative_words_list);
         this.negativeWordList = new ArrayList<>();
-        streamToString(is);
+        loadNegativeWords(is);
+
+        this.trainingDataList = new ArrayList<>();
+        is = context.getResources().openRawResource(R.raw.training_data_for_android);
+        loadTrainingData(is);
+
         this.coefficients = new double[4];
         this.coefficients[0]= -0.878;
         this.coefficients[1]= 0.00277;
@@ -92,20 +98,37 @@ public class Classifier {
         //Log.i(UtilityVariables.tag,"Feature values in "+this.getClass().getSimpleName()+" : "+ Arrays.toString(feedback.featureValues));
         //Log.i(UtilityVariables.tag,"Prediction value comming  in "+this.getClass().getSimpleName()+" : "+ feedback.predictedValue);
         //Log.i(UtilityVariables.tag,"Update classifier: feedback value "+feedback.feedbackValue+", predicted value: "+feedback.predictedValue);
+        Log.i(UtilityVariables.tag,"before feedback, training data list size is: "+this.trainingDataList.size());
+        for(int i=0;i<feedbacks.size();i++)
+        {
+            ClassifierTrainingData tr = new ClassifierTrainingData();
+            tr.featurevalues = feedbacks.get(i).featureValues;
+            tr.truePrediction = feedbacks.get(i).feedbackValue;
+            this.trainingDataList.add(tr);
+        }
+        Log.i(UtilityVariables.tag,"After feedback, training data list size is: "+this.trainingDataList.size());
 
         for(int epoch=0;epoch<this.EPOCH;epoch++)
         {
             double sum_error = 0.0;
-            for(int j=0;j<feedbacks.size();j++)
+            for(int j=0;j<this.trainingDataList.size();j++)
             {
-                CommentFeedback feedback = feedbacks.get(j);
+                ClassifierTrainingData tr = this.trainingDataList.get(j);
+                double yhat = this.predict(tr.featurevalues);
+                double error = tr.truePrediction - yhat;
+                sum_error += error*error;
+                for(int i=0;i<tr.featurevalues.length;i++)
+                {
+                    this.coefficients[i] = this.coefficients[i]*this.LEARNING_RATE*error*tr.featurevalues[i]*yhat*(1.0-yhat);
+                }
+                /*CommentFeedback feedback = feedbacks.get(j);
                 double yhat = this.predict(feedback.featureValues);
                 double error = feedback.feedbackValue - yhat;
                 sum_error += error*error;
                 for(int i=0;i<feedback.featureValues.length;i++)
                 {
                     this.coefficients[i] = this.coefficients[i]*this.LEARNING_RATE*error*feedback.featureValues[i]*yhat*(1.0-yhat);
-                }
+                }*/
 
             }
             Log.i(UtilityVariables.tag,"Updating classifier: epoch: "+epoch+" sum error: "+sum_error);
@@ -113,7 +136,7 @@ public class Classifier {
         }
     }
 
-    private void streamToString(InputStream is) throws IOException {
+    private void loadNegativeWords(InputStream is) throws IOException {
         String str = "";
 
         if (is != null) {
@@ -128,6 +151,37 @@ public class Classifier {
                     if (!this.negativeWordList.contains(line)) {
                         this.negativeWordList.add(line.toString());
                     }
+                }
+
+                reader.close();
+            }
+            finally {
+                is.close();
+            }
+        }
+    }
+
+    private void loadTrainingData(InputStream is) throws IOException {
+        String str = "";
+
+        if (is != null) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            try {
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(is));
+
+                while ((line = reader.readLine()) != null) {
+                    String []tokens = line.split(",");
+                    //Log.i(UtilityVariables.tag,tokens[0].toString()+","+tokens[1].toString()+","+tokens[2].toString()+","+tokens[3].toString());
+                    ClassifierTrainingData tr = new ClassifierTrainingData();
+                    tr.featurevalues[0] = 1.0;
+                    tr.featurevalues[1] = Double.parseDouble(tokens[0].toString());
+                    tr.featurevalues[2] = Double.parseDouble(tokens[1].toString());
+                    tr.featurevalues[3] = Double.parseDouble(tokens[2].toString());
+                    tr.truePrediction = Double.parseDouble(tokens[3].toString());
+                    this.trainingDataList.add(tr);
                 }
 
                 reader.close();

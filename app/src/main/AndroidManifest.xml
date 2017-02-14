@@ -144,6 +144,9 @@
 
         <service
             android:name=".IntentServiceNotification"
+            android:exported="false" />
+        <service
+            android:name=".IntentServiceServer"
             android:exported="false"></service>
     </application>
 
