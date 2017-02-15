@@ -52,21 +52,21 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
             textview1.setText("Please wait while we collect your access token from instagram.");
             String url = messages.getString(IntentSwitchVariables.InstagramLoginCode);
             Log.i(UtilityVariables.tag,"Inside waitfortoken class. the url is: "+url);
+            String code = url.split("=")[1];
 
 
             mReceiver = new JsonResultReceiver(new Handler());
             mReceiver.setReceiver(this);
-            Intent instagramIntentService = new Intent(this, IntentServiceInstagram.class);
-            instagramIntentService.putExtra(IntentSwitchVariables.email,email);
-            instagramIntentService.putExtra(IntentSwitchVariables.url,url);
-            instagramIntentService.putExtra(IntentSwitchVariables.receiver, mReceiver);
-            instagramIntentService.putExtra(IntentSwitchVariables.request, IntentServiceInstagram.GET_TOKEN);
-            startService(instagramIntentService);
+            Intent intent = new Intent(this, IntentServiceServer.class);
+            intent.putExtra(IntentSwitchVariables.SERVER_INSTAGRAM_ACCESS_TOKEN_CODE,code);
+            intent.putExtra(IntentSwitchVariables.receiver, mReceiver);
+            intent.putExtra(IntentSwitchVariables.request, IntentSwitchVariables.REQUEST_INSTAGRAM_ACCESS_TOKEN);
+            startService(intent);
 
         }
         else
         {
-            Log.i(UtilityVariables.tag,"class name did not match while coming to waitfortoken class: "+osnName);
+            //Log.i(UtilityVariables.tag,"class name did not match while coming to waitfortoken class: "+osnName);
         }
 
     }
@@ -76,10 +76,13 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
     public void onReceiveResult(int resultCode, Bundle resultData) {
         switch (resultCode) {
             case IntentServiceGetJson.STATUS_RUNNING:
-                Log.i(UtilityVariables.tag,"Running code intent service");
+                //Log.i(UtilityVariables.tag,"Running code intent service");
                 break;
             case IntentServiceGetJson.STATUS_FINISHED:
-                String accessToken = resultData.getString(IntentSwitchVariables.InstagramAccessToken);
+                String success = resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_SUCCESS);
+                String message = resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_MESSAGE);
+                Log.i(UtilityVariables.tag,"response from server when requesting access token: "+message+", "+success);
+                /*String accessToken = resultData.getString(IntentSwitchVariables.InstagramAccessToken);
                 if(this.requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
                 {
                     databaseHelper.insertAccessTokenValue(DatabaseHelper.NAME_TABLE_GUARDIAN_INFORMATION,this.email,accessToken,DatabaseHelper.NAME_COL_INSTAGRAM_TOKEN);
@@ -94,11 +97,12 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
                 else
                 {
                     Log.i(UtilityVariables.tag,"something happened while getting requst: "+this.requestType);
-                }
+                }*/
                 break;
             case IntentServiceGetJson.STATUS_ERROR:
-                String error = resultData.getString(Intent.EXTRA_TEXT);
-                Log.i(UtilityVariables.tag,error);
+                success = resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_SUCCESS);
+                message = resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_MESSAGE);
+                Log.i(UtilityVariables.tag,"response from server when requesting access token: "+message+", "+success);
                 break;
         }
 

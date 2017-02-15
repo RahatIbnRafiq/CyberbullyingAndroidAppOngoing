@@ -71,6 +71,33 @@ public class IntentServiceServer extends IntentService {
         return str;
     }
 
+    private void instagramGetAccessToken(Intent intent)
+    {
+        ResultReceiver receiver = intent.getParcelableExtra(IntentSwitchVariables.receiver);
+        Bundle bundle = new Bundle();
+        try {
+            InputStream inputStream = null;
+            HttpURLConnection urlConnection = null;
+            String urlString = UtilityVariables.INSTAGRAM_GET_ACCESS_TOKEN+"?code="+intent.getStringExtra(IntentSwitchVariables.SERVER_INSTAGRAM_ACCESS_TOKEN_CODE);
+            Log.i(UtilityVariables.tag,"code url to get access token in "+this.getClass().getSimpleName()+" class: "+urlString);
+            URL url = new URL(urlString);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            inputStream = new BufferedInputStream(urlConnection.getInputStream());
+            String response = streamToString(inputStream);
+            Log.i(UtilityVariables.tag,"login intentservice server login request response:"+ response);
+            JSONObject resultjson = new JSONObject(response);
+            bundle.putString(IntentSwitchVariables.SERVER_RESPONSE_SUCCESS,resultjson.optString("success"));
+            bundle.putString(IntentSwitchVariables.SERVER_RESPONSE_MESSAGE,resultjson.optString("message"));
+            receiver.send(STATUS_FINISHED, bundle);
+
+        }catch (Exception ex)
+        {
+            Log.i(UtilityVariables.tag,"Exception in instagramGetAccessToken function in IntentServiceServer : "+ex.toString());
+            receiver.send(STATUS_ERROR, bundle);
+        }
+    }
+
 
     private void registerGuardian(Intent intent)
     {
@@ -145,6 +172,10 @@ public class IntentServiceServer extends IntentService {
         else if (requestType == IntentSwitchVariables.REQUEST_SERVER_GUARDIAN_REGISTER)
         {
             registerGuardian(intent);
+        }
+        else if (requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_ACCESS_TOKEN)
+        {
+            instagramGetAccessToken(intent);
         }
 
 

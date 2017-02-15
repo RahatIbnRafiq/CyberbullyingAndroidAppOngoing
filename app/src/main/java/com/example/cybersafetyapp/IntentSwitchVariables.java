@@ -86,6 +86,7 @@ public class IntentSwitchVariables {
 
     public static final String SERVER_RESPONSE_SUCCESS = "success";
     public static final String SERVER_RESPONSE_MESSAGE = "message";
+    public static final String SERVER_INSTAGRAM_ACCESS_TOKEN_CODE = "code";
 
 
 

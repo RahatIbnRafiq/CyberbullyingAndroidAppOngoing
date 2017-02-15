@@ -40,6 +40,7 @@ public class UtilityVariables {
     public static final String ROOT_URL = "http://192.168.0.12:3000";
     public static final String LOGIN_GUARDIAN = ROOT_URL+"/api/guardian/login";
     public static final String REGISTER_GUARDIAN = ROOT_URL+"/api/guardian/register";
+    public static final String INSTAGRAM_GET_ACCESS_TOKEN  = ROOT_URL+"/api/guardian/instagramAuthToken";
 
 
 }
