@@ -12,119 +12,119 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".WelcomeToCybersafetyApp">
+        <activity android:name=".ActivityPackage.WelcomeToCybersafetyApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Aboutus">
+        <activity android:name=".ActivityPackage.Aboutus">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.Aboutus" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".LogIn">
+        <activity android:name=".ActivityPackage.LogIn">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.LogIn" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".Register">
+        <activity android:name=".ActivityPackage.Register">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.Register" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".Dashboard">
+        <activity android:name=".ActivityPackage.Dashboard">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.Dashboard" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddNewProfile">
+        <activity android:name=".ActivityPackage.AddNewProfile">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.AddNewProfile" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".SearchByUserName">
+        <activity android:name=".ActivityPackage.SearchByUserName">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.SearchByUserName" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".SearchResultProfiles">
+        <activity android:name=".ActivityPackage.SearchResultProfiles">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.SearchResultProfiles" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".Notifications">
+        <activity android:name=".ActivityPackage.Notifications">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.Notifications" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".InstagramLogin">
+        <activity android:name=".ActivityPackage.InstagramLogin">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.InstagramLogin" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".WaitForToken">
+        <activity android:name=".ActivityPackage.WaitForToken">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.WaitForToken" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".WaitForResults">
+        <activity android:name=".ActivityPackage.WaitForResults">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.WaitForResults" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".VineLogin">
+        <activity android:name=".ActivityPackage.VineLogin">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.VineLogin" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".MonitoringProfileList">
+        <activity android:name=".ActivityPackage.MonitoringProfileList">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.MonitoringProfileList" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".UserSocialNetworkInformationDetail">
+        <activity android:name=".ActivityPackage.UserSocialNetworkInformationDetail">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.UserSocialNetworkInformationDetail" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".UserPostInformationActivity">
+        <activity android:name=".ActivityPackage.UserPostInformationActivity">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.UserPostInformationActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".PostInformationDetails">
+        <activity android:name=".ActivityPackage.PostInformationDetails">
             <intent-filter>
                 <action android:name="com.example.cybersafetyapp.PostInformationDetails" />
 
@@ -132,21 +132,21 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".IntentServiceGetJson" />
+        <service android:name=".IntentServicePackage.IntentServiceGetJson" />
         <service
-            android:name=".IntentServiceInstagram"
+            android:name=".IntentServicePackage.IntentServiceInstagram"
             android:exported="false" />
         <service
-            android:name=".IntentServiceVine"
+            android:name=".IntentServicePackage.IntentServiceVine"
             android:exported="false" />
 
-        <receiver android:name=".AlertReceiver" />
+        <receiver android:name=".HelperClassesPackage.AlertReceiver" />
 
         <service
-            android:name=".IntentServiceNotification"
+            android:name=".IntentServicePackage.IntentServiceNotification"
             android:exported="false" />
         <service
-            android:name=".IntentServiceServer"
+            android:name=".IntentServicePackage.IntentServiceServer"
             android:exported="false"></service>
     </application>
 

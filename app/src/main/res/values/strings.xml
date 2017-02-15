@@ -47,4 +47,12 @@
     <string name="radio_searchbyusername_vine">Vine</string>
     <string name="radio_searchbyusername_ask.fm">Ask.fm</string>
     <string name="title_activity_instagram_login">InstagramLogin</string>
+    <string name="Remove">Remove</string>
+    <string name="Details">Details</string>
+    <string name="Correct">Correct</string>
+    <string name="Wrong">Wrong</string>
+    <string name="Monitor">Monitor</string>
+    <string name="SeePost">See Post</string>
+    <string name="NoCaption">No Caption</string>
+    <string name="TokenWaitInstagram">Please wait while we collect your access token from instagram.</string>
 </resources>
