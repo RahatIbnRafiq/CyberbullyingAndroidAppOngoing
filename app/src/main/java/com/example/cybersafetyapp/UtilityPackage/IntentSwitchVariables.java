@@ -30,6 +30,8 @@ public class IntentSwitchVariables {
     public static final int REQUEST_INSTAGRAM_USER_DETAIL = 13;
     public static final int REQUEST_INSTAGRAM_POST_INFORMATION = 14;
     public static final int REQUEST_INSTAGRAM_POST_DETAILS = 15;
+    public static final int REQUEST_INSTAGRAM_MONITORING_COUNT = 16;
+    public static final int REQUEST_INSTAGRAM_MONITOR_USER = 17;
 
     public static final int REQUEST_SERVER_GUARDIAN_LOGIN = 21;
     public static final int REQUEST_SERVER_GUARDIAN_REGISTER = 22;
@@ -52,6 +54,9 @@ public class IntentSwitchVariables {
     public static final String  INSTAGRAM_USER_DETAIL_RESULT_JSON = "INSTAGRAM_USER_DETAIL_RESULT_JSON";
     public static final String  INSTAGRAM_POST_INFORMATION_RESULT_JSON = "INSTAGRAM_POST_INFORMATION_RESULT_JSON";
     public static final String  INSTAGRAM_POST_DETAILS_RESULT_JSON = "INSTAGRAM_POST_DETAILS_RESULT_JSON";
+    public static final String  INSTAGRAM_USERIDS = "INSTAGRAM_USERIDS";
+    public static final String  INSTAGRAM_USERNAMES = "INSTAGRAM_USERNAMES";
+    public static final String  INSTAGRAM_MONITORING_REQUEST_COUNT = "INSTAGRAM_MONITORING_REQUEST_COUNT";
 
 
 
@@ -72,6 +77,7 @@ public class IntentSwitchVariables {
     public static final String SERVER_RESPONSE_SUCCESS = "success";
     public static final String SERVER_RESPONSE_MESSAGE = "message";
     public static final String SERVER_INSTAGRAM_ACCESS_TOKEN_CODE = "code";
+    public static final String SERVER_INSTAGRAM_MONITORING_COUNT = "SERVER_INSTAGRAM_MONITORING_COUNT";
 
 
 

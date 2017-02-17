@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 
 import com.example.cybersafetyapp.HelperClassesPackage.DatabaseHelper;
+import com.example.cybersafetyapp.HelperClassesPackage.DatabaseWorks;
 import com.example.cybersafetyapp.R;
 import com.example.cybersafetyapp.UtilityPackage.IntentSwitchVariables;
 import com.example.cybersafetyapp.UtilityPackage.UtilityVariables;
@@ -16,7 +17,6 @@ import com.example.cybersafetyapp.UtilityPackage.UtilityVariables;
 
 public class SearchByUserName extends AppCompatActivity{
     private String email;
-    private DatabaseHelper databaseHelper;
     private String classname = this.getClass().getSimpleName();
 
     @Override
@@ -24,10 +24,11 @@ public class SearchByUserName extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_by_user_name);
         Bundle messages = getIntent().getExtras();
-        databaseHelper = new DatabaseHelper(this);
         if(messages == null ||
                 messages.getString(IntentSwitchVariables.SOURCE_CLASS_NAME) == null ||
-                (!messages.getString(IntentSwitchVariables.SOURCE_CLASS_NAME).equals(AddNewProfile.class.getName())))
+                (!messages.getString(IntentSwitchVariables.SOURCE_CLASS_NAME).equals(AddNewProfile.class.getName())) ||
+                (!messages.getString(IntentSwitchVariables.SOURCE_CLASS_NAME).equals(SearchResultProfiles.class.getName()))
+                )
         {
             Intent intent = new Intent(this,Dashboard.class);
 
@@ -55,22 +56,30 @@ public class SearchByUserName extends AppCompatActivity{
 
         if (radioInstagram.isChecked())
         {
+            try {
+                DatabaseWorks databaseWorks = DatabaseWorks.getInstance(this);
+                String token = databaseWorks.getAccessTokenForGuardian(this.email,DatabaseWorks.NAME_COL_INSTAGRAM_TOKEN);
+                databaseWorks.printAllDataFromTable(DatabaseWorks.NAME_TABLE_GUARDIAN_INFORMATION);
+                Intent intent;
+                if(token == null || token.length() < 1)
+                {
+                    intent = new Intent(this,InstagramLogin.class);
+                }
+                else
+                {
+                    intent = new Intent(this,WaitForResults.class);
+                    intent.putExtra(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN,token);
+                }
+                intent.putExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED,userToSearch);
+                intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
+                intent.putExtra(IntentSwitchVariables.REQUEST, IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH);
+                startActivity(intent);
 
-            String token = databaseHelper.getAccessTokenForGuardian(this.email,DatabaseHelper.NAME_COL_INSTAGRAM_TOKEN);
-            Intent intent;
-            if(token.length() < 1)
+            }catch (Exception ex)
             {
-                intent = new Intent(this, InstagramLogin.class);
+                Log.i(UtilityVariables.tag,ex.toString());
             }
-            else
-            {
-                intent = new Intent(this,WaitForResults.class);
-                intent.putExtra(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN,token);
-            }
-            intent.putExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED,userToSearch);
-            intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
-            intent.putExtra(IntentSwitchVariables.REQUEST, IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH);
-            startActivity(intent);
+
         }
     }
 

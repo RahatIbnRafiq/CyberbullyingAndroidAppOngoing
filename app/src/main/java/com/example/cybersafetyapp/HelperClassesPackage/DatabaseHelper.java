@@ -75,11 +75,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void insertAccessTokenValue(String tableName,String email, String token, String columnName)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        //Log.i(UtilityVariables.tag,"inside insertAccessTokenValue function of database helper");
-        //Log.i(UtilityVariables.tag,email+","+token+","+columnName+","+tableName);
-        //ContentValues values = new ContentValues();
-        //values.put(columnName, token);
-        //db.update(tableName, values, "EMAIL='"+email, null);
         String sql = "UPDATE "+NAME_TABLE_GUARDIAN_INFORMATION+" SET "+ columnName+"='"+token+"' WHERE EMAIL='"+email+"'" ;
         db.execSQL(sql);
         db.close();

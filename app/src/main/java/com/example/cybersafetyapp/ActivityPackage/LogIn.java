@@ -10,6 +10,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.cybersafetyapp.HelperClassesPackage.DatabaseWorks;
 import com.example.cybersafetyapp.IntentServicePackage.IntentServiceGetJson;
 import com.example.cybersafetyapp.IntentServicePackage.IntentServiceServer;
 import com.example.cybersafetyapp.HelperClassesPackage.JsonResultReceiver;
@@ -111,6 +113,9 @@ public class LogIn extends AppCompatActivity implements JsonResultReceiver.Recei
                         intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
                         intent.putExtra(IntentSwitchVariables.SOURCE_CLASS_NAME,this.getClass().getName());
                         startActivity(intent);
+                        DatabaseWorks databaseworks = DatabaseWorks.getInstance(getApplicationContext());
+                        databaseworks.insertGuardianData(this.email);
+                        //databaseworks.printAllDataFromTable(DatabaseWorks.NAME_TABLE_GUARDIAN_INFORMATION);
                     }
                     else
                     {

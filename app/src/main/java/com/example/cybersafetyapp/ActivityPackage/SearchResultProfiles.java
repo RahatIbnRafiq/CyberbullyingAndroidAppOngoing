@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cybersafetyapp.HelperClassesPackage.DatabaseHelper;
+import com.example.cybersafetyapp.HelperClassesPackage.JsonResultReceiver;
+import com.example.cybersafetyapp.IntentServicePackage.IntentServiceGetJson;
+import com.example.cybersafetyapp.IntentServicePackage.IntentServiceServer;
 import com.example.cybersafetyapp.R;
 import com.example.cybersafetyapp.UtilityPackage.ToastMessagesVariables;
 import com.example.cybersafetyapp.UtilityPackage.ErrorMessageVariables;
@@ -30,17 +34,20 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class SearchResultProfiles extends AppCompatActivity {
+public class SearchResultProfiles extends AppCompatActivity implements JsonResultReceiver.Receiver {
     private String email;
     private DatabaseHelper databaseHelper;
     private Bundle messages;
     private int requstType;
     private TableLayout tableSearchResult;
     private String classname = this.getClass().getSimpleName();
+    private int alreadyMonitoring;
+    private int noOfCheckedCheckboxes ;
+    private String userids;
+    private String usernames;
 
 
-    private void addTableRow(String username,String userid,String profileUrl,int i)
-    {
+    private void addTableRow(String username, String userid, String profileUrl, int i) {
         TableRow tr_head = new TableRow(this);
         tr_head.setId(i);
         tr_head.setBackgroundColor(Color.GRAY);
@@ -50,7 +57,7 @@ public class SearchResultProfiles extends AppCompatActivity {
         TextView label_username = new TextView(this);
         label_username.setText(username);
         label_username.setTextColor(Color.WHITE);
-        label_username.setPadding(0,2,0,1);
+        label_username.setPadding(0, 2, 0, 1);
         tr_head.addView(label_username);
 
 
@@ -62,15 +69,14 @@ public class SearchResultProfiles extends AppCompatActivity {
         CheckBox toMonitorCheckbox = new CheckBox(this);
         toMonitorCheckbox.setText(R.string.Monitor);
         //ltrb
-        toMonitorCheckbox.setPadding(2,2,5,1);
+        toMonitorCheckbox.setPadding(2, 2, 5, 1);
         tr_head.addView(toMonitorCheckbox);
 
         TextView label_userid = new TextView(this);
         label_userid.setText(userid);
         label_userid.setVisibility(View.INVISIBLE);
-        label_userid.setPadding(0,2,0,1);
+        label_userid.setPadding(0, 2, 0, 1);
         tr_head.addView(label_userid);
-
 
 
         tableSearchResult.addView(tr_head, new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
@@ -79,24 +85,18 @@ public class SearchResultProfiles extends AppCompatActivity {
     }
 
 
-    private void addDataToTable(JSONArray userdata)
-    {
-        if(userdata.length() == 0)
-        {
-            Toast.makeText(this,"No user found for this user name. Please try again with a different user name",Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(this,SearchByUserName.class);
-            intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
+    private void addDataToTable(JSONArray userdata) {
+        if (userdata.length() == 0) {
+            Toast.makeText(this, "No user found for this user name. Please try again with a different user name", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, SearchByUserName.class);
+            intent.putExtra(IntentSwitchVariables.EMAIL, this.email);
             startActivity(intent);
-        }
-        else
-        {
+        } else {
             tableSearchResult = (TableLayout) findViewById(R.id.TableSearchResult);
-            if(this.requstType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
-            {
-                for(int i=0;i<userdata.length();i++)
-                {
+            if (this.requstType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH) {
+                for (int i = 0; i < userdata.length(); i++) {
                     JSONObject record = userdata.optJSONObject(i);
-                    addTableRow(record.optString("username"),record.optString("id"),record.optString("profile_picture"),i);
+                    addTableRow(record.optString("username"), record.optString("id"), record.optString("profile_picture"), i);
                 }
             }
 
@@ -104,21 +104,19 @@ public class SearchResultProfiles extends AppCompatActivity {
     }
 
 
-    private void showInstagramSearchProfiles()
-    {
-        try{
+    private void showInstagramSearchProfiles() {
+        try {
             JSONObject resultjson = new JSONObject(messages.getString(IntentSwitchVariables.INSTAGRAM_USER_SEARCH_RESULT_JSON));
             JSONArray userdata = resultjson.optJSONArray("data");
             this.requstType = IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH;
             addDataToTable(userdata);
 
 
-        }catch (Exception ex)
-        {
-            Toast.makeText(this,"Something unexpected happened",Toast.LENGTH_LONG).show();
-            Log.i(UtilityVariables.tag,this.classname+"Exception in showInstagramSearchProfiles function: "+ex.toString());
-            Intent intent = new Intent(this,SearchByUserName.class);
-            intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
+        } catch (Exception ex) {
+            Toast.makeText(this, "Something unexpected happened", Toast.LENGTH_LONG).show();
+            Log.i(UtilityVariables.tag, this.classname + "Exception in showInstagramSearchProfiles function: " + ex.toString());
+            Intent intent = new Intent(this, SearchByUserName.class);
+            intent.putExtra(IntentSwitchVariables.EMAIL, this.email);
             startActivity(intent);
         }
     }
@@ -130,126 +128,163 @@ public class SearchResultProfiles extends AppCompatActivity {
         databaseHelper = new DatabaseHelper(this);
         messages = getIntent().getExtras();
         this.email = messages.getString(IntentSwitchVariables.EMAIL);
-        if(messages.getInt(IntentSwitchVariables.REQUEST) == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
-        {
+        this.alreadyMonitoring = -1;
+        this.noOfCheckedCheckboxes = 0;
+        this.userids = "";
+        this.usernames = "";
+        if (messages.getInt(IntentSwitchVariables.REQUEST) == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH) {
             showInstagramSearchProfiles();
         }
     }
 
 
-    private Class checkIfValidMonitoringRequest()
-    {
-        ArrayList<String> userids = new ArrayList<>();
-        ArrayList<String> usernames = new ArrayList<>();
+    private void getUsersFromCheckboxes() {
+
 
         TableLayout tableSearchResult = (TableLayout) findViewById(R.id.TableSearchResult);
-        int noOfCheckedCheckboxes = 0;
-        for(int i=0;i<tableSearchResult.getChildCount();i++)
-        {
+
+        for (int i = 0; i < tableSearchResult.getChildCount(); i++) {
             TableRow mRow = (TableRow) tableSearchResult.getChildAt(i);
             TextView userid = (TextView) mRow.getChildAt(3);
             TextView username = (TextView) mRow.getChildAt(0);
-            CheckBox mCheckbox = (CheckBox)mRow.getChildAt(2);
+            CheckBox mCheckbox = (CheckBox) mRow.getChildAt(2);
             if (mCheckbox.isChecked()) {
                 noOfCheckedCheckboxes++;
-                userids.add(userid.getText().toString());
-                usernames.add(username.getText().toString());
+                this.userids = this.userids+","+userid.getText().toString();
+                this.usernames = this.usernames+","+username.getText().toString();
             }
         }
+        this.userids = this.userids.substring(1,this.userids.length());
+        this.usernames = this.usernames.substring(1,this.usernames.length());
+        Log.i(UtilityVariables.tag,this.userids);
+        Log.i(UtilityVariables.tag,this.usernames);
 
-        if (noOfCheckedCheckboxes > UtilityVariables.NO_OF_TO_BE_MONITORED_USERS)
-        {
+
+        if (noOfCheckedCheckboxes > UtilityVariables.NO_OF_TO_BE_MONITORED_USERS) {
             Toast.makeText(this, ErrorMessageVariables.CANNOT_MONITOR_MORE_THAN_TWO, Toast.LENGTH_SHORT).show();
-            return SearchResultProfiles.class;
-        }
-
-        else if(noOfCheckedCheckboxes == 0)
-        {
+        } else if (noOfCheckedCheckboxes == 0) {
             Toast.makeText(this, ErrorMessageVariables.DID_NOT_SELECT_ANY, Toast.LENGTH_SHORT).show();
-            return SearchResultProfiles.class;
         }
-        Cursor res=null;
-
-        try {
-            ArrayList<String> alreadyMonitoring = new ArrayList<>();
-            String tableName = "";
-            if(this.requstType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
-                tableName = DatabaseHelper.NAME_TABLE_INSTAGRAM_MONITORING_USER_TABLE;
-
-            res = this.databaseHelper.getMonitorInformationByGuardianEmail(tableName,this.email);
-            if(res != null)
+        /*else {
+            if(this.alreadyMonitoring == -1) {
+                JsonResultReceiver mReceiver = new JsonResultReceiver(new Handler());
+                mReceiver.setReceiver(this);
+                Intent intent = new Intent(this, IntentServiceServer.class);
+                intent.putExtra(IntentSwitchVariables.EMAIL, this.email);
+                intent.putExtra(IntentSwitchVariables.RECEIVER, mReceiver);
+                intent.putExtra(IntentSwitchVariables.REQUEST, IntentSwitchVariables.REQUEST_INSTAGRAM_MONITORING_COUNT);
+                startService(intent);
+            }
+            else
             {
-                if(res.moveToFirst())
+                if(this.noOfCheckedCheckboxes + this.alreadyMonitoring > UtilityVariables.NO_OF_TO_BE_MONITORED_USERS)
                 {
-                    do {
-                        alreadyMonitoring.add(res.getString(res.getColumnIndex(DatabaseHelper.NAME_COL_USERID)));
-
-                    }while(res.moveToNext());
+                    Toast.makeText(this, "You are already monitoring "+this.alreadyMonitoring+"" +
+                            "users.You can only monitor "+UtilityVariables.NO_OF_TO_BE_MONITORED_USERS
+                            +" users. Please select again", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    performMonitoringRequest();
                 }
             }
-
-            if(alreadyMonitoring.size() == UtilityVariables.NO_OF_TO_BE_MONITORED_USERS)
-            {
-                Toast.makeText(this, ToastMessagesVariables.ALREADY_MONITORING_ENOUGH, Toast.LENGTH_SHORT).show();
-                return Dashboard.class;
-            }
-
-            if(alreadyMonitoring.size()+noOfCheckedCheckboxes > UtilityVariables.NO_OF_TO_BE_MONITORED_USERS)
-            {
-                Toast.makeText(this, ErrorMessageVariables.CANNOT_MONITOR_MORE_THAN_TWO, Toast.LENGTH_SHORT).show();
-                return SearchResultProfiles.class;
-            }
-
-            for(int i=0;i<alreadyMonitoring.size();i++)
-            {
-                Log.i(UtilityVariables.tag,this.classname+ "already monitoring: "+alreadyMonitoring.get(i));
-            }
-            for(int i=0;i<userids.size();i++)
-            {
-                Log.i(UtilityVariables.tag,this.classname+ "proposing monitoring for: "+userids.get(i));
-            }
-
-            for(int i=0;i<userids.size();i++)
-            {
-                if (alreadyMonitoring.indexOf(userids.get(i)) < 0)
-                {
-                    long insertionResult = databaseHelper.insertMonitoringTable(email,userids.get(i),usernames.get(i),tableName);
-                    if(insertionResult == -1)
-                    {
-                        Toast.makeText(this, ErrorMessageVariables.UNEXPECTED_DATABASE_ERROR, Toast.LENGTH_SHORT).show();
-                        Log.i(UtilityVariables.tag,this.classname+ " : unexpected error while inserting. breaking out of the insertion loop");
-                        return Dashboard.class;
-                    }
-                }
-            }
-            Toast.makeText(this, ToastMessagesVariables.YOU_ARE_NOW_MONITORING, Toast.LENGTH_SHORT).show();
-            return Dashboard.class;
-        } catch (Exception e)
-        {
-            Log.i(UtilityVariables.tag,this.classname+ ": Exception checkIfValidMonitoringRequest in class: "+this.getClass().getName());
-            Log.i(UtilityVariables.tag,e.toString());
-            return Dashboard.class;
-
-        }finally {
-            if(res != null)
-                res.close();
-        }
+        }*/
 
     }
 
 
-
+    private void performMonitoringRequest()
+    {
+        JsonResultReceiver mReceiver = new JsonResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
+        Intent intent = new Intent(this, IntentServiceServer.class);
+        intent.putExtra(IntentSwitchVariables.EMAIL, this.email);
+        intent.putExtra(IntentSwitchVariables.RECEIVER, mReceiver);
+        intent.putExtra(IntentSwitchVariables.INSTAGRAM_USERIDS, this.userids);
+        intent.putExtra(IntentSwitchVariables.INSTAGRAM_USERNAMES, this.usernames);
+        intent.putExtra(IntentSwitchVariables.INSTAGRAM_MONITORING_REQUEST_COUNT, this.noOfCheckedCheckboxes);
+        intent.putExtra(IntentSwitchVariables.REQUEST, IntentSwitchVariables.REQUEST_INSTAGRAM_MONITOR_USER);
+        startService(intent);
+    }
 
 
     public void buttonOnClickStartMonitoring(View v)
     {
-        Log.i(UtilityVariables.tag,this.classname+ " going to check if valid function in search result profiles");
-        Class whereToSwitch = checkIfValidMonitoringRequest();
-        Log.i(UtilityVariables.tag,this.classname+ " switching to this activity from search result profiles activity "+whereToSwitch);
-        Intent intent = new Intent(this,whereToSwitch);
-        intent.putExtra(IntentSwitchVariables.EMAIL,email);
-        intent.putExtra(IntentSwitchVariables.SOURCE_CLASS_NAME,this.getClass().getName());
-        startActivity(intent);
+        try {
+            getUsersFromCheckboxes();
+            performMonitoringRequest();
+        }catch (Exception ex)
+        {
+            Log.i(UtilityVariables.tag,this.classname+" buttonOnClickStartMonitoring: "+ex.toString());
+        }
+
+    }
+
+    @Override
+    public void onReceiveResult(int resultCode, Bundle resultData) {
+
+        switch (resultCode) {
+            case IntentServiceGetJson.STATUS_RUNNING:
+                Log.i(UtilityVariables.tag,"Running code intent service");
+                break;
+            case IntentServiceGetJson.STATUS_FINISHED:
+                int requesttype = resultData.getInt(IntentSwitchVariables.REQUEST);
+                if (requesttype == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
+                {
+                    Intent intent = new Intent(this,SearchResultProfiles.class);
+                    intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
+                    intent.putExtra(IntentSwitchVariables.REQUEST,requesttype);
+                    intent.putExtra(IntentSwitchVariables.INSTAGRAM_USER_SEARCH_RESULT_JSON,resultData.getString(IntentSwitchVariables.INSTAGRAM_USER_SEARCH_RESULT_JSON));
+                    intent.putExtra(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN,resultData.getString(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN));
+                    startActivity(intent);
+                }
+                else if (requesttype == IntentSwitchVariables.REQUEST_INSTAGRAM_MONITOR_USER)
+                {
+                    //Log.i(UtilityVariables.tag,this.classname+" REQUEST_INSTAGRAM_MONITOR_USER has been processed");
+                    String message = resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_MESSAGE);
+                    String success = resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_SUCCESS);
+                    if(success!= null && success.equals("success"))
+                    {
+                        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(this,Dashboard.class);
+                        intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
+                        intent.putExtra(IntentSwitchVariables.TO_BE_MONITORED_USERIDS,this.userids);
+                        intent.putExtra(IntentSwitchVariables.SOURCE_CLASS_NAME,this.getClass().getName());
+                        startActivity(intent);
+
+                    }
+                    else
+                    {
+                        Log.i(UtilityVariables.tag,"going to SearchByUsername class");
+                        Toast.makeText(this, message+". Please Try Again.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(this,SearchByUserName.class);
+                        intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
+                        intent.putExtra(IntentSwitchVariables.SOURCE_CLASS_NAME,this.getClass().getName());
+                        startActivity(intent);
+                    }
+
+                }
+                /*else if (requesttype == IntentSwitchVariables.REQUEST_INSTAGRAM_MONITORING_COUNT)
+                {
+                    this.alreadyMonitoring = resultData.getInt(IntentSwitchVariables.SERVER_INSTAGRAM_MONITORING_COUNT);
+                    if(this.noOfCheckedCheckboxes + this.alreadyMonitoring > UtilityVariables.NO_OF_TO_BE_MONITORED_USERS)
+                    {
+                        Toast.makeText(this, "You are already monitoring "+this.alreadyMonitoring+"" +
+                                "users.You can only monitor "+UtilityVariables.NO_OF_TO_BE_MONITORED_USERS
+                                +" users. Please select again", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        performMonitoringRequest();
+                    }
+                }*/
+                break;
+            case IntentServiceGetJson.STATUS_ERROR:
+                String error = resultData.getString(Intent.EXTRA_TEXT);
+                Log.i(UtilityVariables.tag,error);
+                break;
+        }
+
     }
 
 

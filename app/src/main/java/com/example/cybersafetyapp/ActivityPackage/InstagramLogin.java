@@ -94,7 +94,7 @@ public class InstagramLogin extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 if(--running == 0) {
-                    Log.i(UtilityVariables.tag,"InstagramLogin: Finished loading page: "+url);
+                    //(UtilityVariables.tag,"InstagramLogin: Finished loading page: "+url);
                 }
             }
         });

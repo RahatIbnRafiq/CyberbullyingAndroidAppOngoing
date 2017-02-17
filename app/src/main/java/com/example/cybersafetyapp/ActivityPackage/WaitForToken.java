@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.example.cybersafetyapp.HelperClassesPackage.DatabaseHelper;
+import com.example.cybersafetyapp.HelperClassesPackage.DatabaseWorks;
 import com.example.cybersafetyapp.IntentServicePackage.IntentServiceGetJson;
 import com.example.cybersafetyapp.IntentServicePackage.IntentServiceServer;
 import com.example.cybersafetyapp.HelperClassesPackage.JsonResultReceiver;
@@ -16,10 +17,11 @@ import com.example.cybersafetyapp.UtilityPackage.IntentSwitchVariables;
 import com.example.cybersafetyapp.UtilityPackage.UtilityVariables;
 
 public class WaitForToken extends AppCompatActivity implements JsonResultReceiver.Receiver {
-    private  String email;
+    private String email;
     private String usernameToBeSearched;
     private String osnName;
     private String classname = this.getClass().getSimpleName();
+    private int requestType;
 
     private boolean checkIfValidIntent(Bundle messages)
     {
@@ -27,7 +29,7 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
             this.email = messages.getString(IntentSwitchVariables.EMAIL);
             this.usernameToBeSearched = messages.getString(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED);
             this.osnName = messages.getString(IntentSwitchVariables.OSN_NAME);
-            int requestType = messages.getInt(IntentSwitchVariables.REQUEST);
+            this.requestType = messages.getInt(IntentSwitchVariables.REQUEST);
             return true;
         }
         catch (Exception e)
@@ -42,7 +44,6 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wait_for_token);
         Bundle messages = getIntent().getExtras();
-        //DatabaseHelper databaseHelper = new DatabaseHelper(this);
         if(!this.checkIfValidIntent(messages))
         {
             Intent intent = new Intent(this,Dashboard.class);
@@ -78,9 +79,29 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
             case IntentServiceGetJson.STATUS_RUNNING:
                 break;
             case IntentServiceGetJson.STATUS_FINISHED:
-                String success = resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_SUCCESS);
-                String message = resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_MESSAGE);
-                Log.i(UtilityVariables.tag,"response from server when requesting access token: "+message+", "+success);
+                String instagramAccessToken = resultData.getString(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN);
+                if(instagramAccessToken != null)
+                {
+                    Log.i(UtilityVariables.tag,this.classname+" access token is found "+instagramAccessToken);
+                    if(this.requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
+                    {
+                        DatabaseWorks databaseWorks = DatabaseWorks.getInstance(this);
+                        databaseWorks.insertAccessTokenValue(this.email,instagramAccessToken,
+                                DatabaseWorks.NAME_COL_INSTAGRAM_TOKEN);
+                        databaseWorks.printAllDataFromTable(DatabaseWorks.NAME_TABLE_GUARDIAN_INFORMATION);
+                        Intent intent = new Intent(this,WaitForResults.class);
+                        intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
+                        intent.putExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED,this.usernameToBeSearched);
+                        intent.putExtra(IntentSwitchVariables.REQUEST,this.requestType);
+                        intent.putExtra(IntentSwitchVariables.OSN_NAME,this.osnName);
+                        intent.putExtra(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN,instagramAccessToken);
+                        startActivity(intent);
+                    }
+                }
+                else
+                {
+                    Log.i(UtilityVariables.tag,this.classname+" access token has not been found ");
+                }
                 /*String accessToken = resultData.getString(IntentSwitchVariables.InstagramAccessToken);
                 if(this.requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
                 {
@@ -99,9 +120,7 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
                 }*/
                 break;
             case IntentServiceGetJson.STATUS_ERROR:
-                success = resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_SUCCESS);
-                message = resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_MESSAGE);
-                Log.i(UtilityVariables.tag,"response from server when requesting access token: "+message+", "+success);
+                Log.i(UtilityVariables.tag,"response from server when requesting access token: ");
                 break;
         }
 

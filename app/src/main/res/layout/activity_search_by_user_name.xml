@@ -67,7 +67,5 @@
         android:id="@+id/button_searchbyusername_searchuser"
         android:layout_marginTop="217dp"
         android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/radioButton10"
-        android:layout_alignEnd="@+id/radioButton10"
         android:onClick="buttonOnclickSearchByUserName"/>
 </RelativeLayout>

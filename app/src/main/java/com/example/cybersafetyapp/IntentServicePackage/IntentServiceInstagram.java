@@ -98,7 +98,7 @@ public class IntentServiceInstagram extends IntentService {
             urlConnection.setRequestMethod("GET");
 
             int statusCode = urlConnection.getResponseCode();
-            Log.i(UtilityVariables.tag,this.classname+"instagramUserSearch function: status code "+statusCode);
+            //Log.i(UtilityVariables.tag,this.classname+"instagramUserSearch function: status code "+statusCode);
             if(statusCode == 200)
             {
                 inputStream = new BufferedInputStream(urlConnection.getInputStream());
