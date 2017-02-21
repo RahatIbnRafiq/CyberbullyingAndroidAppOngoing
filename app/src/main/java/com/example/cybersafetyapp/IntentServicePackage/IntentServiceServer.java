@@ -177,7 +177,7 @@ public class IntentServiceServer extends IntentService {
             bundle.putString(IntentSwitchVariables.SERVER_RESPONSE_SUCCESS,resultjson.optString("success"));
             bundle.putString(IntentSwitchVariables.SERVER_RESPONSE_MESSAGE,resultjson.optString("message"));
             bundle.putString(IntentSwitchVariables.SERVER_INSTAGRAM_MONITORING_COUNT,resultjson.optString("count"));
-            intent.putExtra(IntentSwitchVariables.REQUEST, IntentSwitchVariables.REQUEST_INSTAGRAM_MONITORING_COUNT);
+            bundle.putInt(IntentSwitchVariables.REQUEST, IntentSwitchVariables.REQUEST_INSTAGRAM_MONITORING_COUNT);
             receiver.send(STATUS_FINISHED, bundle);
 
         }catch (Exception ex)
@@ -239,6 +239,36 @@ public class IntentServiceServer extends IntentService {
     }
 
 
+    private void instagramGetMonitoringUsers(Intent intent)
+    {
+        ResultReceiver receiver = intent.getParcelableExtra(IntentSwitchVariables.RECEIVER);
+        Bundle bundle = new Bundle();
+        try {
+            InputStream inputStream ;
+            HttpURLConnection urlConnection ;
+            String urlString = UtilityVariables.INSTAGRAM_GET_MONITORING_USERS+"?email="+intent.getStringExtra(IntentSwitchVariables.EMAIL);
+            URL url = new URL(urlString);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            inputStream = new BufferedInputStream(urlConnection.getInputStream());
+            String response = streamToString(inputStream);
+            //Log.i(UtilityVariables.tag,response);
+            JSONObject resultjson = new JSONObject(response);
+            bundle.putString(IntentSwitchVariables.SERVER_RESPONSE_SUCCESS,resultjson.optString("success"));
+            bundle.putString(IntentSwitchVariables.SERVER_RESPONSE_MESSAGE,resultjson.optString("message"));
+            bundle.putString(IntentSwitchVariables.JSON_RESULT,resultjson.optString("users"));
+            bundle.putString(IntentSwitchVariables.OSN_NAME,"Instagram");
+            bundle.putInt(IntentSwitchVariables.REQUEST, IntentSwitchVariables.REQUEST_SERVER_GET_INSTAGRAM_MONITORING_USERS);
+            receiver.send(STATUS_FINISHED, bundle);
+
+        }catch (Exception ex)
+        {
+            Log.i(UtilityVariables.tag,"Exception in instagramGetMonitoringUsers function in IntentServiceServer : "+ex.toString());
+            receiver.send(STATUS_ERROR, bundle);
+        }
+    }
+
+
     @Override
     protected void onHandleIntent(Intent intent) {
         int requestType = intent.getIntExtra(IntentSwitchVariables.REQUEST,0);
@@ -258,6 +288,10 @@ public class IntentServiceServer extends IntentService {
         else if (requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_MONITOR_USER)
         {
             instagramRequestMonitor(intent);
+        }
+        else if (requestType == IntentSwitchVariables.REQUEST_SERVER_GET_INSTAGRAM_MONITORING_USERS)
+        {
+            instagramGetMonitoringUsers(intent);
         }
 
 

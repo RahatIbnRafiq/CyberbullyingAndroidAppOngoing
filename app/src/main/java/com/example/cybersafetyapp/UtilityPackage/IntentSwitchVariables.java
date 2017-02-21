@@ -35,6 +35,7 @@ public class IntentSwitchVariables {
 
     public static final int REQUEST_SERVER_GUARDIAN_LOGIN = 21;
     public static final int REQUEST_SERVER_GUARDIAN_REGISTER = 22;
+    public static final int REQUEST_SERVER_GET_INSTAGRAM_MONITORING_USERS = 23;
 
 
 

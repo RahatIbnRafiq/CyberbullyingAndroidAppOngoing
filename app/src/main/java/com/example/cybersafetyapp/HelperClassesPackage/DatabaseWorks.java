@@ -17,11 +17,22 @@ public class DatabaseWorks extends SQLiteOpenHelper{
     private static DatabaseWorks mInstance = null;
     public static final String NAME_DATABASE = "DATABASE_CYBERSAFETYAPP.db";
     public static final String NAME_TABLE_GUARDIAN_INFORMATION = "TABLE_GUARDIAN_INFORMATION";
+    public static final String NAME_TABLE_INSTAGRAM_MONITORING_POST_TABLE = "TABLE_INSTAGRAM_MONITORING_POST_INFORMATION";
 
+    public static final String NAME_COL_EMAIL = "EMAIL";
+    public static final String NAME_COL_PASSWORD = "PASSWORD";
+    public static final String NAME_COL_PHONE = "PHONE";
+    public static final String NAME_COL_USERNAME = "USERNAME";
+    public static final String NAME_COL_USERID = "USERID";
+    public static final String NAME_COL_POSTID = "POSTID";
+    public static final String NAME_COL_CREATEDTIME = "CREATEDTIME";
+    public static final String NAME_COL_LASTTIMECHECKED = "LASTTIMECHECKED";
+    public static final String NAME_COL_LINK = "LINK";
+
+    public static final String NAME_COL_VINE_TOKEN = "VINE_TOKEN";
     public static final String NAME_COL_INSTAGRAM_TOKEN = "INSTAGRAM_TOKEN";
     public static final String NAME_COL_TWITTER_TOKEN = "TWITTER_TOKEN";
     public static final String NAME_COL_FACEBOOK_TOKEN = "FACEBOOK_TOKEN";
-    public static final String NAME_COL_EMAIL = "EMAIL";
 
     private Context mCxt;
 
@@ -45,12 +56,23 @@ public class DatabaseWorks extends SQLiteOpenHelper{
         colList.add(NAME_COL_FACEBOOK_TOKEN);
         this.hasTable.put(NAME_TABLE_GUARDIAN_INFORMATION,colList);
 
+        colList = new ArrayList<>();
+        colList.add(NAME_COL_EMAIL);
+        colList.add(NAME_COL_POSTID);
+        colList.add(NAME_COL_LINK);
+        colList.add(NAME_COL_CREATEDTIME);
+        colList.add(NAME_COL_LASTTIMECHECKED);
+        this.hasTable.put(NAME_TABLE_INSTAGRAM_MONITORING_POST_TABLE,colList);
+
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS "+NAME_TABLE_GUARDIAN_INFORMATION +
                 " (EMAIL TEXT PRIMARY KEY NOT NULL,INSTAGRAM_TOKEN TEXT, TWITTER_TOKEN TEXT, FACEBOOK_TOKEN TEXT)");
+
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+NAME_TABLE_INSTAGRAM_MONITORING_POST_TABLE +" (EMAIL TEXT NOT NULL, POSTID TEXT NOT NULL , LINK TEXT NOT NULL, " +
+                "CREATEDTIME TEXT NOT NULL, LASTTIMECHECKED TEXT NOT NULL, PRIMARY KEY(EMAIL,POSTID))");
 
 
     }
@@ -61,6 +83,58 @@ public class DatabaseWorks extends SQLiteOpenHelper{
         onCreate(db);
 
 
+    }
+
+    public Hashtable<String,String> getMonitoringPostIDLastTimeCheckedByEmail(String email,String tablename)
+    {
+        //Log.i(UtilityVariables.tag,"Inside databasehelper, getMonitoringPostIDsByEmail  function");
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("SELECT * FROM "+tablename+" WHERE EMAIL = ?", new String[] {email});
+        Hashtable<String,String> posts= new Hashtable<String,String>();
+        if(res != null)
+        {
+            if(res.moveToFirst())
+            {
+                do {
+                    //postids.add(res.getString(res.getColumnIndex(DatabaseHelper.NAME_COL_POSTID)));
+                    posts.put(res.getString(res.getColumnIndex(DatabaseHelper.NAME_COL_POSTID)),
+                            res.getString(res.getColumnIndex(DatabaseHelper.NAME_COL_LASTTIMECHECKED)));
+
+                }while(res.moveToNext());
+            }
+        }
+
+        return posts;
+    }
+
+    public void updateLastTimeCheckedForPost(String tableName,String postid, String lastTimeChecked)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        //Log.i(UtilityVariables.tag,"inside updateLastTimeCheckedForPost function of database helper");
+        String sql = "UPDATE "+tableName+" SET "+ NAME_COL_LASTTIMECHECKED+"='"+lastTimeChecked+"' WHERE POSTID ='"+postid+"'" ;
+        db.execSQL(sql);
+        db.close();
+    }
+
+
+    public long insertMonitoringPostTable(Post post, String tablename, String email)
+    {
+        try {
+            //Log.i(UtilityVariables.tag," database helper insert monitoringpost table function");
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(NAME_COL_EMAIL, email);
+            contentValues.put(NAME_COL_POSTID, post.postid);
+            contentValues.put(NAME_COL_CREATEDTIME, post.createdtime);
+            contentValues.put(NAME_COL_LASTTIMECHECKED, post.lastcheckedtime);
+            contentValues.put(NAME_COL_LINK, post.link);
+            return db.insert(tablename, null, contentValues);
+        }
+        catch (Exception e)
+        {
+            return -1;
+
+        }
     }
 
     public String getAccessTokenForGuardian(String email,String columnName)
@@ -108,6 +182,25 @@ public class DatabaseWorks extends SQLiteOpenHelper{
                 }while(res.moveToNext());
             }
         }
+    }
+
+    public ArrayList<String> getMonitoringPostIDsByEmail(String email,String tablename)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("SELECT * FROM "+tablename+" WHERE EMAIL = ?", new String[] {email});
+        ArrayList<String> postids= new ArrayList<>();
+        if(res != null)
+        {
+            if(res.moveToFirst())
+            {
+                do {
+                    postids.add(res.getString(res.getColumnIndex(DatabaseHelper.NAME_COL_POSTID)));
+
+                }while(res.moveToNext());
+            }
+        }
+
+        return postids;
     }
 
     public boolean insertGuardianData(String email)

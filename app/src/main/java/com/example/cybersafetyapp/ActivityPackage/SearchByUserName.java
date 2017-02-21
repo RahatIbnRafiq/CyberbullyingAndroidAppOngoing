@@ -24,7 +24,7 @@ public class SearchByUserName extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_by_user_name);
         Bundle messages = getIntent().getExtras();
-        if(messages == null ||
+        /*if(messages == null ||
                 messages.getString(IntentSwitchVariables.SOURCE_CLASS_NAME) == null ||
                 (!messages.getString(IntentSwitchVariables.SOURCE_CLASS_NAME).equals(AddNewProfile.class.getName())) ||
                 (!messages.getString(IntentSwitchVariables.SOURCE_CLASS_NAME).equals(SearchResultProfiles.class.getName()))
@@ -44,7 +44,7 @@ public class SearchByUserName extends AppCompatActivity{
 
             intent.putExtra(IntentSwitchVariables.SOURCE_CLASS_NAME,this.getClass().getName());
             startActivity(intent);
-        }
+        }*/
         email = messages.getString(IntentSwitchVariables.EMAIL);
     }
 

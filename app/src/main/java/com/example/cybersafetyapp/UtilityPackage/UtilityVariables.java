@@ -31,7 +31,7 @@ public class UtilityVariables {
    // public static final String VINE_URL_POST_COMMENTS = "https://api.vineapp.com/posts/";
 
 
-    public static final String ROOT_URL = "http://192.168.5.204:3000";
+    public static final String ROOT_URL = "http://192.168.0.12:3000";
     public static final String LOGIN_GUARDIAN = ROOT_URL+"/api/guardian/login";
     public static final String REGISTER_GUARDIAN = ROOT_URL+"/api/guardian/register";
 
@@ -40,6 +40,7 @@ public class UtilityVariables {
 
     public static final String INSTAGRAM_GET_MONITORING_COUNT  = ROOT_URL+"/api/guardian/instagram/getMonitoringCount";
     public static final String INSTAGRAM_MONITOR_USER  = ROOT_URL+"/api/guardian/instagram/useraddRequest";
+    public static final String INSTAGRAM_GET_MONITORING_USERS = ROOT_URL+"/api/guardian/instagram/getMonitoringUsers";
 
 
 

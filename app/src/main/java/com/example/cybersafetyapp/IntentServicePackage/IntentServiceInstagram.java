@@ -137,17 +137,21 @@ public class IntentServiceInstagram extends IntentService {
             urlConnection.setRequestMethod("GET");
 
             int statusCode = urlConnection.getResponseCode();
-            Log.i(UtilityVariables.tag,this.classname+" getUserInformation function: status code "+statusCode);
+            //Log.i(UtilityVariables.tag,this.classname+" getUserInformation function: status code "+statusCode);
             if(statusCode == 200)
             {
                 inputStream = new BufferedInputStream(urlConnection.getInputStream());
                 String response = convertInputStreamToString(inputStream);
-                Log.i(UtilityVariables.tag,this.classname+" getUserInformation function: User information found for instagram: "+response);
+                //Log.i(UtilityVariables.tag,this.classname+" getUserInformation function: User information found for instagram: "+response);
                 bundle.putString(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN, intent.getStringExtra(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN));
                 bundle.putString(IntentSwitchVariables.USERID, userid);
                 bundle.putInt(IntentSwitchVariables.REQUEST,IntentSwitchVariables.REQUEST_INSTAGRAM_USER_DETAIL);
                 bundle.putString(IntentSwitchVariables.INSTAGRAM_USER_DETAIL_RESULT_JSON,response);
                 receiver.send(STATUS_FINISHED, bundle);
+            }
+            else {
+                receiver.send(STATUS_ERROR, bundle);
+
             }
         }catch (Exception ex)
         {

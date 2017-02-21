@@ -9,13 +9,16 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.example.cybersafetyapp.ActivityPackage.InstagramLogin;
 import com.example.cybersafetyapp.HelperClassesPackage.APIWorks;
 import com.example.cybersafetyapp.ActivityPackage.Notifications;
 import com.example.cybersafetyapp.ClassifierPackage.Classifier;
 import com.example.cybersafetyapp.HelperClassesPackage.Comment;
 import com.example.cybersafetyapp.HelperClassesPackage.CommentFeedback;
 import com.example.cybersafetyapp.HelperClassesPackage.DatabaseHelper;
+import com.example.cybersafetyapp.HelperClassesPackage.DatabaseWorks;
 import com.example.cybersafetyapp.HelperClassesPackage.Post;
+import com.example.cybersafetyapp.HelperClassesPackage.ServerWorks;
 import com.example.cybersafetyapp.R;
 import com.example.cybersafetyapp.UtilityPackage.IntentSwitchVariables;
 import com.example.cybersafetyapp.UtilityPackage.UtilityVariables;
@@ -27,12 +30,12 @@ import java.util.Set;
 
 
 public class IntentServiceNotification extends IntentService {
-    private static DatabaseHelper databaseHelper;
+    //private static DatabaseHelper databaseHelper;
     String email;
     //static boolean  instagramNewCommentsFound = false;
     //static boolean  vineNewCommentsFound = false;
     Classifier classifier;
-    private int instagramNumberOfBullying = 0;
+    private int instagramNumberOfBullying;
     ArrayList<CommentFeedback>feedbackList;
 
 
@@ -48,19 +51,23 @@ public class IntentServiceNotification extends IntentService {
         this.email = messages.getString(IntentSwitchVariables.EMAIL);
         try {
             this.classifier = Classifier.getInstance(this);
+            this.instagramNumberOfBullying = 0;
+            instagramNotificationCheck();
+
+            if(this.instagramNumberOfBullying > 0)
+            {
+                createNotification(this, "Possible Bullying!!", "On Instagram!!"+this.instagramNumberOfBullying+" instances", "Possible Bullying!");
+                this.instagramNumberOfBullying = 0;
+            }
 
         }catch (Exception e)
         {
             Log.i(UtilityVariables.tag,e.toString());
         }
-        instagramNotificationCheck();
+
         //createNotification(this, "Possible Bullying!!", "On Instagram!!"+this.instagramNumberOfBullying+" instances", "Possible Bullying!");
 
-        if(this.instagramNumberOfBullying > 0)
-        {
-            createNotification(this, "Possible Bullying!!", "On Instagram!!"+this.instagramNumberOfBullying+" instances", "Possible Bullying!");
-            this.instagramNumberOfBullying = 0;
-        }
+
 
 
 
@@ -87,22 +94,26 @@ public class IntentServiceNotification extends IntentService {
         notificationManager.notify(1,mBuilder.build());
     }
 
-    private void instagramNotificationCheck()
+    private void instagramNotificationCheck() throws Exception
     {
         this.feedbackList = new ArrayList<>();
-        IntentServiceNotification.databaseHelper = new DatabaseHelper(this);
+        ServerWorks serverworks = ServerWorks.getInstance();
+        ArrayList<String>useridList = serverworks.getMonitoringUsers(this.email,IntentSwitchVariables.INSTAGRAM);
+        /*for(int i=0;i<useridList.size();i++)
+        {
+            Log.i(UtilityVariables.tag,this.getClass().getSimpleName()+" userids: "+useridList.get(i));
+        }*/
+        DatabaseWorks databaseWorks = DatabaseWorks.getInstance(getApplicationContext());
+        ArrayList<String> monitoringPostList = databaseWorks.getMonitoringPostIDsByEmail(this.email,DatabaseWorks.NAME_TABLE_INSTAGRAM_MONITORING_POST_TABLE);
+        String accessToken = databaseWorks.getAccessTokenForGuardian(this.email,DatabaseWorks.NAME_COL_INSTAGRAM_TOKEN);
+        //Log.i(UtilityVariables.tag,this.getClass().getSimpleName()+" the access token: "+accessToken);
 
-        // first for instagram
-
-        // getting the instagram userids that are being monitored
-        // then getting any new posts that have been shared and insert the postids in the database
-        ArrayList<String> useridList = getUsersFromDB(DatabaseHelper.NAME_TABLE_INSTAGRAM_MONITORING_USER_TABLE);
-        ArrayList<String> monitoringPostList = IntentServiceNotification.databaseHelper.getMonitoringPostIDsByEmail(this.email,DatabaseHelper.NAME_TABLE_INSTAGRAM_MONITORING_POST_TABLE);
-        String accessToken = IntentServiceNotification.databaseHelper.getAccessTokenForGuardian(this.email,DatabaseHelper.NAME_COL_INSTAGRAM_TOKEN);
         APIWorks apiworks = APIWorks.getInstance();
-        ArrayList<Post> posts = null;
+        ArrayList<Post> posts = new ArrayList<>();
         for(String userid:useridList) {
-            posts = apiworks.instagramGettingUserPosts(userid, accessToken);
+            ArrayList<Post> postsForThisUser = apiworks.instagramGettingUserPosts(userid, accessToken);
+            posts.addAll(postsForThisUser) ;
+            //Log.i(UtilityVariables.tag,this.getClass().getSimpleName()+" userid: "+userid+" posts size: "+posts.size());
         }
         if(posts != null)
         {
@@ -110,11 +121,14 @@ public class IntentServiceNotification extends IntentService {
             {
                 if(!monitoringPostList.contains(post.postid))
                 {
-                    IntentServiceNotification.databaseHelper.insertMonitoringPostTable(post,DatabaseHelper.NAME_TABLE_INSTAGRAM_MONITORING_POST_TABLE,this.email);
+                    //Log.i(UtilityVariables.tag,"Inserting posts into database: "+post.postid);
+                    databaseWorks.insertMonitoringPostTable(post,DatabaseWorks.NAME_TABLE_INSTAGRAM_MONITORING_POST_TABLE,this.email);
                 }
             }
         }
-        Hashtable<String,String> monitoringPosts = IntentServiceNotification.databaseHelper.getMonitoringPostIDLastTimeCheckedByEmail(this.email,DatabaseHelper.NAME_TABLE_INSTAGRAM_MONITORING_POST_TABLE);
+        //databaseWorks.printAllDataFromTable(DatabaseWorks.NAME_TABLE_INSTAGRAM_MONITORING_POST_TABLE);
+
+        Hashtable<String,String> monitoringPosts = databaseWorks.getMonitoringPostIDLastTimeCheckedByEmail(this.email,DatabaseWorks.NAME_TABLE_INSTAGRAM_MONITORING_POST_TABLE);
         Set<String> postids = monitoringPosts.keySet();
         for(String postid:postids)
         {
@@ -126,16 +140,15 @@ public class IntentServiceNotification extends IntentService {
             {
                 if((Long.parseLong(comment.createdtime)) > lastCheckedTime)
                 {
-                    //instagramNewCommentsFound = true;
                     newComments.add(comment.commentText);
                     temp = Long.parseLong(comment.createdtime);
                 }
 
             }
             if(!lastCheckedTime.equals(temp)) {
-                IntentServiceNotification.databaseHelper.updateLastTimeCheckedForPost(DatabaseHelper.NAME_TABLE_INSTAGRAM_MONITORING_POST_TABLE, postid, temp.toString());
+                databaseWorks.updateLastTimeCheckedForPost(DatabaseWorks.NAME_TABLE_INSTAGRAM_MONITORING_POST_TABLE, postid, temp.toString());
             }
-            if(newComments.size()>0)
+            if(newComments.size() > 0)
             {
                 CommentFeedback commentFeedback = new CommentFeedback();
 
@@ -146,8 +159,6 @@ public class IntentServiceNotification extends IntentService {
                 commentFeedback.featureValues = featureValues;
                 commentFeedback.predictedValue = prediction;
                 this.feedbackList.add(commentFeedback);
-                Log.i(UtilityVariables.tag,"Feature values in "+this.getClass().getSimpleName()+" : "+ Arrays.toString(featureValues));
-                Log.i(UtilityVariables.tag,"Prediction value in "+this.getClass().getSimpleName()+" : "+ prediction);
 
                 this.instagramNumberOfBullying++;
                 if (Math.round(prediction) == 1)
@@ -161,11 +172,12 @@ public class IntentServiceNotification extends IntentService {
                     commentFeedback.classifierResult= "Not Bullying";
                 }
             }
+
         }
     }
 
 
-    private ArrayList<String> getUsersFromDB(String tableName)
+    /*private ArrayList<String> getUsersFromDB(String tableName)
     {
         ArrayList<String> useridList = new ArrayList<>();
         Hashtable<String,String> users = IntentServiceNotification.databaseHelper.getMonitoringInformationDetailByGuardianEmail(tableName,this.email);
@@ -175,7 +187,8 @@ public class IntentServiceNotification extends IntentService {
         }
 
         return useridList;
-    }
+    }*/
+
 
 
 }

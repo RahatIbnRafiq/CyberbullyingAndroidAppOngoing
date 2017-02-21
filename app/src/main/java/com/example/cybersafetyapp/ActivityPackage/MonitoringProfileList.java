@@ -1,5 +1,6 @@
 package com.example.cybersafetyapp.ActivityPackage;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
@@ -11,54 +12,65 @@ import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.cybersafetyapp.HelperClassesPackage.DatabaseHelper;
+import com.example.cybersafetyapp.HelperClassesPackage.DatabaseWorks;
 import com.example.cybersafetyapp.IntentServicePackage.IntentServiceGetJson;
 import com.example.cybersafetyapp.IntentServicePackage.IntentServiceInstagram;
 import com.example.cybersafetyapp.HelperClassesPackage.JsonResultReceiver;
+import com.example.cybersafetyapp.IntentServicePackage.IntentServiceServer;
 import com.example.cybersafetyapp.R;
+import com.example.cybersafetyapp.UtilityPackage.ErrorMessageVariables;
 import com.example.cybersafetyapp.UtilityPackage.IntentSwitchVariables;
+import com.example.cybersafetyapp.UtilityPackage.ToastMessagesVariables;
 import com.example.cybersafetyapp.UtilityPackage.UtilityVariables;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.Hashtable;
 import java.util.Set;
 
 public class MonitoringProfileList extends AppCompatActivity implements View.OnClickListener,JsonResultReceiver.Receiver {
-    private DatabaseHelper databaseHelper;
+    //private DatabaseHelper databaseHelper;
     private String email;
     private TableLayout tableSearchResult;
     private String classname = this.getClass().getSimpleName();
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try
         {
-
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_monitoring_profile_list);
             this.tableSearchResult = (TableLayout) findViewById(R.id.activity_monitoring_profile_list_table);
-            this.databaseHelper = new DatabaseHelper(this);
+            //this.databaseHelper = new DatabaseHelper(this);
             Bundle messages = getIntent().getExtras();
             this.email = messages.getString(IntentSwitchVariables.EMAIL);
+            this.progressDialog = new ProgressDialog(this);
 
-            Hashtable<String,String> monitorInformation = databaseHelper.getMonitoringInformationDetailByGuardianEmail(DatabaseHelper.NAME_TABLE_INSTAGRAM_MONITORING_USER_TABLE,this.email);
-            int i = 0;
-            if(monitorInformation.size() > 0)
-            {
-                String str;
-                Set<String> keys = monitorInformation.keySet();
-                for (String key : keys) {
-                    str = key;
-                    addTableRow(monitorInformation.get(str), str, "Instagram", i++);
-                }
-            }
-
+            getMonitoringUsersFromServerInstagram();
 
 
         }catch (Exception ex)
         {
             Log.i(UtilityVariables.tag,"Exception in class: "+this.classname+" onCreate function Exception: "+ex.toString());
         }
+
+    }
+
+
+    private void getMonitoringUsersFromServerInstagram()
+    {
+        JsonResultReceiver mReceiver = new JsonResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
+        Intent intentServiceServer = new Intent(this, IntentServiceServer.class);
+        intentServiceServer.putExtra(IntentSwitchVariables.EMAIL,this.email);
+        intentServiceServer.putExtra(IntentSwitchVariables.RECEIVER, mReceiver);
+        intentServiceServer.putExtra(IntentSwitchVariables.REQUEST, IntentSwitchVariables.REQUEST_SERVER_GET_INSTAGRAM_MONITORING_USERS);
+        startService(intentServiceServer);
 
     }
 
@@ -107,40 +119,56 @@ public class MonitoringProfileList extends AppCompatActivity implements View.OnC
         this.tableSearchResult.addView(tr_head, new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
     }
 
+
+    private void removeMonitoringUser(Button buttonClicked)
+    {
+        //Log.i(UtilityVariables.tag,this.classname+" : Remove user button was clicked.");
+        TableRow row = (TableRow) buttonClicked.getParent();
+        TextView osnName = (TextView) row.getChildAt(0);
+        TextView username = (TextView) row.getChildAt(1);
+        TextView userid = (TextView) row.getChildAt(4);
+        if (osnName.getText().toString().equals("Instagram"))
+        {
+        }
+        Log.i(UtilityVariables.tag,this.classname+" remove button has been clicked for username:"+username.getText().toString());
+        /*Intent intent = new Intent(this,Dashboard.class);
+        intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
+        startActivity(intent);*/
+    }
+
+    private void getUserSocialNetworkInformation(Button buttonClicked)
+    {
+        TableRow row = (TableRow) buttonClicked.getParent();
+        TextView osnName = (TextView) row.getChildAt(0);
+        TextView userid = (TextView) row.getChildAt(4);
+        DatabaseWorks databaseWorks = DatabaseWorks.getInstance(getApplicationContext());
+        if (osnName.getText().toString().equals("Instagram")) {
+            //Log.i(UtilityVariables.tag, this.classname+ " the user is from instagram:"+userid.getText().toString());
+            JsonResultReceiver mReceiver = new JsonResultReceiver(new Handler());
+            mReceiver.setReceiver(this);
+            Intent instagramIntentService = new Intent(this, IntentServiceInstagram.class);
+            instagramIntentService.putExtra(IntentSwitchVariables.USERID, userid.getText().toString());
+            String accessToken = databaseWorks.getAccessTokenForGuardian(this.email,DatabaseWorks.NAME_COL_INSTAGRAM_TOKEN);
+            //Log.i(UtilityVariables.tag, this.classname+ " access token for instagram "+accessToken);
+            instagramIntentService.putExtra(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN, accessToken);
+            instagramIntentService.putExtra(IntentSwitchVariables.RECEIVER, mReceiver);
+            instagramIntentService.putExtra(IntentSwitchVariables.REQUEST, IntentSwitchVariables.REQUEST_INSTAGRAM_USER_DETAIL);
+            startService(instagramIntentService);
+
+        }
+    }
+
+
     @Override
     public void onClick(View v) {
         Button buttonClicked = (Button)v;
         if(buttonClicked.getText().toString().equals("Remove"))
         {
-            Log.i(UtilityVariables.tag,this.classname+" : Remove user button was clicked.");
-            TableRow row = (TableRow) buttonClicked.getParent();
-            TextView osnName = (TextView) row.getChildAt(0);
-            TextView userid = (TextView) row.getChildAt(4);
-            if (osnName.getText().toString().equals("Instagram"))
-            {
-                this.databaseHelper.deleteMonitoredUserFromTable(DatabaseHelper.NAME_TABLE_INSTAGRAM_MONITORING_USER_TABLE,
-                        this.email,userid.getText().toString());
-            }
-            Intent intent = new Intent(this,Dashboard.class);
-            intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
-            startActivity(intent);
+            removeMonitoringUser(buttonClicked);
         }
         else {
-            TableRow row = (TableRow) buttonClicked.getParent();
-            TextView osnName = (TextView) row.getChildAt(0);
-            TextView userid = (TextView) row.getChildAt(4);
-            if (osnName.getText().toString().equals("Instagram")) {
-                Log.i(UtilityVariables.tag, this.classname+ " the user is from instagram");
-                JsonResultReceiver mReceiver = new JsonResultReceiver(new Handler());
-                mReceiver.setReceiver(this);
-                Intent instagramIntentService = new Intent(this, IntentServiceInstagram.class);
-                instagramIntentService.putExtra(IntentSwitchVariables.USERID, userid.getText().toString());
-                instagramIntentService.putExtra(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN, databaseHelper.getAccessTokenForGuardian(this.email, DatabaseHelper.NAME_COL_INSTAGRAM_TOKEN));
-                instagramIntentService.putExtra(IntentSwitchVariables.RECEIVER, mReceiver);
-                instagramIntentService.putExtra(IntentSwitchVariables.REQUEST, IntentSwitchVariables.REQUEST_INSTAGRAM_USER_DETAIL);
-                startService(instagramIntentService);
-
-            }
+            this.progressDialog.show();
+            getUserSocialNetworkInformation(buttonClicked);
         }
 
     }
@@ -152,7 +180,7 @@ public class MonitoringProfileList extends AppCompatActivity implements View.OnC
             case IntentServiceGetJson.STATUS_RUNNING:
                 break;
             case IntentServiceGetJson.STATUS_FINISHED:
-                Intent intent = new Intent(this,UserSocialNetworkInformationDetail.class);
+                /*Intent intent = new Intent(this,UserSocialNetworkInformationDetail.class);
                 intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
                 intent.putExtra(IntentSwitchVariables.REQUEST,resultData.getInt(IntentSwitchVariables.REQUEST));
                 intent.putExtra(IntentSwitchVariables.USERID, resultData.getString(IntentSwitchVariables.USERID));
@@ -161,7 +189,46 @@ public class MonitoringProfileList extends AppCompatActivity implements View.OnC
                     intent.putExtra(IntentSwitchVariables.INSTAGRAM_USER_DETAIL_RESULT_JSON,resultData.getString(IntentSwitchVariables.INSTAGRAM_USER_DETAIL_RESULT_JSON));
                     intent.putExtra(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN,resultData.getString(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN));
                 }
-                startActivity(intent);
+                startActivity(intent);*/
+
+                int requesttype = resultData.getInt(IntentSwitchVariables.REQUEST);
+                if(requesttype  == IntentSwitchVariables.REQUEST_SERVER_GET_INSTAGRAM_MONITORING_USERS)
+                {
+                    this.progressDialog.dismiss();
+                    if(resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_SUCCESS).equals("success")) {
+                        //Log.i(UtilityVariables.tag, resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_MESSAGE));
+                        //Log.i(UtilityVariables.tag, resultData.getString(IntentSwitchVariables.JSON_RESULT));
+                        try {
+                            String jsonResult = resultData.getString(IntentSwitchVariables.JSON_RESULT);
+                            JSONArray jsonArray = new JSONArray(jsonResult);
+                            for(int i=0;i<jsonArray.length();i++)
+                            {
+                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                addTableRow(jsonObject.optString("username"),jsonObject.optString("userid"),
+                                        resultData.getString(IntentSwitchVariables.OSN_NAME),i);
+                            }
+                        }catch (Exception ex)
+                        {
+                            Toast.makeText(this, ErrorMessageVariables.UNEXPECTED_DATABASE_ERROR,Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                    else
+                    {
+                        Toast.makeText(this, resultData.getString(IntentSwitchVariables.SERVER_RESPONSE_MESSAGE),Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                else if(requesttype  == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_DETAIL)
+                {
+                    Intent intent = new Intent(this,UserSocialNetworkInformationDetail.class);
+                    intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
+                    intent.putExtra(IntentSwitchVariables.REQUEST,resultData.getInt(IntentSwitchVariables.REQUEST));
+                    intent.putExtra(IntentSwitchVariables.USERID, resultData.getString(IntentSwitchVariables.USERID));
+                    intent.putExtra(IntentSwitchVariables.INSTAGRAM_USER_DETAIL_RESULT_JSON,resultData.getString(IntentSwitchVariables.INSTAGRAM_USER_DETAIL_RESULT_JSON));
+                    intent.putExtra(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN,resultData.getString(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN));
+                    startActivity(intent);
+                }
                 break;
             case IntentServiceGetJson.STATUS_ERROR:
                 break;
