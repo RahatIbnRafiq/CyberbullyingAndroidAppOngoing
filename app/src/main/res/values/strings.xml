@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">CyberSafetyApp</string>
-    <string name="welcome_text1">Welcome to the CyberSafety app! Thank you for downloading it!</string>
+    <string name="welcome_text1">Welcome to the CyberSafety app! Thank you for downloading it! Please click on the menu option
+    to navigate along the application. You have to register into our application to be able to use it.</string>
     <string name="welcome_text2">If you are a returning user, click the log in button.</string>
     <string name="welcome_text3">If you are a new user, please click the register button.</string>
     <string name="welcome_text4">To know about this app and us, please click the bout button.</string>
@@ -55,4 +56,9 @@
     <string name="SeePost">See Post</string>
     <string name="NoCaption">No Caption</string>
     <string name="TokenWaitInstagram">Please wait while we collect your access token from instagram.</string>
+
+
+
+    <string name="drawer_open">Open Drawer</string>
+    <string name="drawer_close">Close Drawer</string>
 </resources>

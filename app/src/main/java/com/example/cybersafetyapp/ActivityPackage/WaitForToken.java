@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.cybersafetyapp.HelperClassesPackage.DatabaseHelper;
 import com.example.cybersafetyapp.HelperClassesPackage.DatabaseWorks;
@@ -14,6 +15,7 @@ import com.example.cybersafetyapp.IntentServicePackage.IntentServiceServer;
 import com.example.cybersafetyapp.HelperClassesPackage.JsonResultReceiver;
 import com.example.cybersafetyapp.R;
 import com.example.cybersafetyapp.UtilityPackage.IntentSwitchVariables;
+import com.example.cybersafetyapp.UtilityPackage.ToastMessagesVariables;
 import com.example.cybersafetyapp.UtilityPackage.UtilityVariables;
 
 public class WaitForToken extends AppCompatActivity implements JsonResultReceiver.Receiver {
@@ -22,14 +24,19 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
     private String osnName;
     private String classname = this.getClass().getSimpleName();
     private int requestType;
+    private String useridGetDetail;
 
     private boolean checkIfValidIntent(Bundle messages)
     {
         try {
             this.email = messages.getString(IntentSwitchVariables.EMAIL);
-            this.usernameToBeSearched = messages.getString(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED);
             this.osnName = messages.getString(IntentSwitchVariables.OSN_NAME);
             this.requestType = messages.getInt(IntentSwitchVariables.REQUEST);
+            if(requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
+                this.usernameToBeSearched = messages.getString(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED);
+            else if(requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_ACCESS_TOKEN)
+                this.useridGetDetail  = messages.getString(IntentSwitchVariables.USERID_GET_DETAIL);
+
             return true;
         }
         catch (Exception e)
@@ -97,27 +104,23 @@ public class WaitForToken extends AppCompatActivity implements JsonResultReceive
                         intent.putExtra(IntentSwitchVariables.INSTAGRAM_ACCESS_TOKEN,instagramAccessToken);
                         startActivity(intent);
                     }
+                    else if(this.requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_ACCESS_TOKEN)
+                    {
+                        DatabaseWorks databaseWorks = DatabaseWorks.getInstance(this);
+                        databaseWorks.insertAccessTokenValue(this.email,instagramAccessToken,
+                                DatabaseWorks.NAME_COL_INSTAGRAM_TOKEN);
+                        databaseWorks.printAllDataFromTable(DatabaseWorks.NAME_TABLE_GUARDIAN_INFORMATION);
+                        Toast.makeText(this, "Got your token. Now you can see the user details.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(this,MonitoringProfileList.class);
+                        intent.putExtra(IntentSwitchVariables.EMAIL,this.email);
+                        startActivity(intent);
+                    }
                 }
                 else
                 {
                     Log.i(UtilityVariables.tag,this.classname+" access token has not been found ");
                 }
-                /*String accessToken = resultData.getString(IntentSwitchVariables.InstagramAccessToken);
-                if(this.requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
-                {
-                    databaseHelper.insertAccessTokenValue(DatabaseHelper.NAME_TABLE_GUARDIAN_INFORMATION,this.email,accessToken,DatabaseHelper.NAME_COL_INSTAGRAM_TOKEN);
-                    Intent intent = new Intent(WaitForResults.class.getName());
-                    intent.putExtra(IntentSwitchVariables.email,this.email);
-                    intent.putExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED,this.usernameToBeSearched);
-                    intent.putExtra(IntentSwitchVariables.request,this.requestType);
-                    intent.putExtra(IntentSwitchVariables.OSNName,this.osnName);
-                    intent.putExtra(IntentSwitchVariables.InstagramAccessToken,accessToken);
-                    startActivity(intent);
-                }
-                else
-                {
-                    Log.i(UtilityVariables.tag,"something happened while getting requst: "+this.requestType);
-                }*/
+
                 break;
             case IntentServiceGetJson.STATUS_ERROR:
                 Log.i(UtilityVariables.tag,"response from server when requesting access token: ");

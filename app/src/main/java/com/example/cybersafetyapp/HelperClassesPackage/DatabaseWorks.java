@@ -2,6 +2,7 @@ package com.example.cybersafetyapp.HelperClassesPackage;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -209,10 +210,13 @@ public class DatabaseWorks extends SQLiteOpenHelper{
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues contentValues = new ContentValues();
             contentValues.put(NAME_COL_EMAIL, email);
-            long result = db.insert(NAME_TABLE_GUARDIAN_INFORMATION, null, contentValues);
-            if(result==1)
+            try{
+                db.insert(NAME_TABLE_GUARDIAN_INFORMATION, null, contentValues);
                 return true;
-            return false;
+            }catch (SQLiteConstraintException ex)
+            {
+                return false;
+            }
         }
         catch (Exception e)
         {

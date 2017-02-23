@@ -22,6 +22,7 @@ public class InstagramLogin extends AppCompatActivity {
     private WebView webView;
     private String email;
     private String usernameToBeSearched;
+    private String useridGetDetail;
     private int requestType;
     private String classname = this.getClass().getSimpleName();
 
@@ -31,8 +32,11 @@ public class InstagramLogin extends AppCompatActivity {
         try {
             Bundle messages = intent.getExtras();
             this.email = messages.getString(IntentSwitchVariables.EMAIL);
-            this.usernameToBeSearched = messages.getString(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED);
             this.requestType = messages.getInt(IntentSwitchVariables.REQUEST);
+            if(requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
+                this.usernameToBeSearched = messages.getString(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED);
+            else if(requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_ACCESS_TOKEN)
+                this.useridGetDetail  = messages.getString(IntentSwitchVariables.USERID_GET_DETAIL);
             return true;
         }
         catch (Exception e)
@@ -67,7 +71,15 @@ public class InstagramLogin extends AppCompatActivity {
                     intent.putExtra(IntentSwitchVariables.OSN_NAME,IntentSwitchVariables.INSTAGRAM);
                     intent.putExtra(IntentSwitchVariables.INSTAGRAM_LOGIN_CODE,url);
                     intent.putExtra(IntentSwitchVariables.EMAIL,email);
-                    intent.putExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED,usernameToBeSearched);
+                    if(requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_ACCESS_TOKEN)
+                    {
+                        intent.putExtra(IntentSwitchVariables.USERID_GET_DETAIL,useridGetDetail);
+                    }
+                    else if(requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
+                    {
+                        intent.putExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED,usernameToBeSearched);
+                    }
+
                     intent.putExtra(IntentSwitchVariables.REQUEST,requestType);
                     startActivity(intent);
                 }
@@ -84,7 +96,14 @@ public class InstagramLogin extends AppCompatActivity {
                     intent.putExtra(IntentSwitchVariables.OSN_NAME,IntentSwitchVariables.INSTAGRAM);
                     intent.putExtra(IntentSwitchVariables.INSTAGRAM_LOGIN_CODE,url);
                     intent.putExtra(IntentSwitchVariables.EMAIL,email);
-                    intent.putExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED,usernameToBeSearched);
+                    if(requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_ACCESS_TOKEN)
+                    {
+                        intent.putExtra(IntentSwitchVariables.USERID_GET_DETAIL,useridGetDetail);
+                    }
+                    else if(requestType == IntentSwitchVariables.REQUEST_INSTAGRAM_USER_SEARCH)
+                    {
+                        intent.putExtra(IntentSwitchVariables.USERNAME_TO_BE_SEARCHED,usernameToBeSearched);
+                    }
                     intent.putExtra(IntentSwitchVariables.REQUEST,requestType);
                     startActivity(intent);
                 }

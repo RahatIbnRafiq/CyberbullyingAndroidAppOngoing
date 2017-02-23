@@ -70,6 +70,7 @@ public class IntentSwitchVariables {
 
 
     public static final String USERNAME_TO_BE_SEARCHED = "USERNAME_TO_BE_SEARCHED";
+    public static final String USERID_GET_DETAIL = "USERID_GET_DETAIL";
     public static final String USERID = "USERID";
     public static final String POSTID = "POSTID";
 

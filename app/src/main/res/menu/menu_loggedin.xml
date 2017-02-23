@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/MenuAboutUs"
+        android:title="About Us" />
+
+    <item
+        android:id="@+id/MenuLogout"
+        android:title="Log out" />
+
+    <item
+        android:id="@+id/MenuDashboard"
+        android:title="Dashboard" />
+
+    <item
+        android:id="@+id/MenuSettings"
+        android:title="Settings" />
+
+    <item
+        android:id="@+id/MenuAddUser"
+        android:title="Add a User" />
+
+    <item
+        android:id="@+id/MenuEditProfile"
+        android:title="Edit Profile" />
+
+    <item
+        android:id="@+id/MenuCheckMonitoringProfiles"
+        android:title="Check Monitoring Profiles" />
+
+    <item
+        android:id="@+id/MenuTurnAlarmOn"
+        android:title="Turn Alarm On" />
+
+</menu>
