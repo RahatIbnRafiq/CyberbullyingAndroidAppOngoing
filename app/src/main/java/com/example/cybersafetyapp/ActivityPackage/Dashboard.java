@@ -43,9 +43,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         this.notificationButton = (Button)findViewById(R.id.button_dashboard_check_notifications);
-        this.notificationButton.setText(this.alarmOn);
-
-
 
         try
         {
@@ -62,7 +59,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             {
                 Toast.makeText(this, ToastMessagesVariables.YOU_ARE_NOW_MONITORING + messages.getString(IntentSwitchVariables.TO_BE_MONITORED_USERIDS), Toast.LENGTH_SHORT).show();
             }
-            //setAlarm();
+            setAlarmText();
 
         }catch (Exception ex)
         {
@@ -118,12 +115,23 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             alarmManager.set(AlarmManager.RTC_WAKEUP,alertTime,PendingIntent.getService(this,1,notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT));
             //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),10000,PendingIntent.getService(this,1,notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT));
             UtilityVariables.isAlarmOn = true;
-            this.notificationButton.setText(this.alarmOff);
         }
         else
         {
             UtilityVariables.isAlarmOn = false;
             alarmManager.cancel(PendingIntent.getService(this,1,notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT));
+        }
+        setAlarmText();
+    }
+
+    private void setAlarmText()
+    {
+        if(UtilityVariables.isAlarmOn)
+        {
+            this.notificationButton.setText(this.alarmOff);
+        }
+        else
+        {
             this.notificationButton.setText(this.alarmOn);
         }
     }

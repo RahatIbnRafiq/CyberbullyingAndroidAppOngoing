@@ -32,7 +32,7 @@ public class UtilityVariables {
    // public static final String VINE_URL_POST_COMMENTS = "https://api.vineapp.com/posts/";
 
 
-    public static final String ROOT_URL = "http://198.11.28.182:3000";
+    public static final String ROOT_URL = "http://192.168.0.13:3000";
     public static final String LOGIN_GUARDIAN = ROOT_URL+"/api/guardian/login";
     public static final String REGISTER_GUARDIAN = ROOT_URL+"/api/guardian/register";
 
