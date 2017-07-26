@@ -34,11 +34,9 @@
 
 
 
-    <string name="textview_addnewprofile_contenttext">Here, you can add new social network profiles to monitor for potential
-    cyberbullying instances. Currently we are supporting four social networks, namely Facebook, Instagram, Vine and Ask.fm. You can
-    either search by the email and we will fetch all the social networks attached to that email address or you can select a particular
-    social network and enter the username of the profile. In case of a private social network profile, you have to give us the username
-    and password of that profile in order for you to monitor that profile.</string>
+    <string name="textview_addnewprofile_contenttext">You can add new social network profiles to monitor for potential
+    cyberbullying instances. Currently we are supporting Instagram with plans for including Facebook in the future. Search by the
+    Instagram username . You might have to log into your Instagram account to get the results.</string>
     <string name="button_addnewprofile_searchbyemail">Search by email</string>
     <string name="button_addnewprofile_searchbyusername">Search by username</string>
 

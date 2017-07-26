@@ -30,27 +30,28 @@
             android:navigationIcon="@mipmap/ic_menu_black_24dp"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
+
+
     <TextView
         android:text="@string/textview_addnewprofile_contenttext"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_marginTop="80dp"
         android:id="@+id/textview_addnewprofile_contenttext" />
 
-    <Button
-        android:text="@string/button_addnewprofile_searchbyusername"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button_addnewprofile_searchbyusername"
-        android:onClick="buttonOnClickSearchByUserName"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="64dp"
-        android:layout_marginStart="64dp" />
+            <Button
+                android:text="@string/button_addnewprofile_searchbyusername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/button_addnewprofile_searchbyusername"
+                android:onClick="buttonOnClickSearchByUserName"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="80dp"
+                android:layout_marginLeft="64dp" />
+
     </RelativeLayout>
 
 
