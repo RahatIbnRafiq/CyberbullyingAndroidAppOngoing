@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -61,26 +62,35 @@ public class SearchResultProfiles extends AppCompatActivity implements JsonResul
         TableRow tr_head = new TableRow(this);
         tr_head.setId(i);
         tr_head.setBackgroundColor(Color.GRAY);
-        tr_head.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+        tr_head.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT));
+
+        CheckBox toMonitorCheckbox = new CheckBox(this);
+        toMonitorCheckbox.setText(R.string.Monitor);
+        //ltrb
+        toMonitorCheckbox.setPadding(2, 2, 15, 1);
+        tr_head.addView(toMonitorCheckbox);
+
+
 
 
         TextView label_username = new TextView(this);
         label_username.setText(username);
         label_username.setTextColor(Color.WHITE);
-        label_username.setPadding(0, 2, 0, 1);
+        label_username.setPadding(2, 2, 15, 1);
+        //TableLayout.LayoutParams params = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
+        //label_username.setLayoutParams(params);
         tr_head.addView(label_username);
-
 
         ImageView profilePicture = new ImageView(this);
         new DownloadImageTask(profilePicture).execute(profileUrl);
 
+
         tr_head.addView(profilePicture);
 
-        CheckBox toMonitorCheckbox = new CheckBox(this);
-        toMonitorCheckbox.setText(R.string.Monitor);
-        //ltrb
-        toMonitorCheckbox.setPadding(2, 2, 5, 1);
-        tr_head.addView(toMonitorCheckbox);
+
+
+
+
 
         TextView label_userid = new TextView(this);
         label_userid.setText(userid);
@@ -89,9 +99,10 @@ public class SearchResultProfiles extends AppCompatActivity implements JsonResul
         tr_head.addView(label_userid);
 
 
-        tableSearchResult.addView(tr_head, new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
+        tableSearchResult.addView(tr_head);
         profilePicture.getLayoutParams().height = 100;
-        profilePicture.getLayoutParams().width = 100;
+        profilePicture.getLayoutParams().width = 200;
+
     }
 
 

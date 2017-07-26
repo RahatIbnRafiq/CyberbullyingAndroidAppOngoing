@@ -14,8 +14,8 @@
 
     <RelativeLayout
         android:id="@+id/main_content"
-        android:layout_width="100dp"
-        android:layout_height="70dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
@@ -29,13 +29,16 @@
             android:minHeight="?attr/actionBarSize"
             android:navigationIcon="@mipmap/ic_menu_black_24dp"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
-    <Button
-        android:id="@+id/button_activity_search_result_profiles_start_monitoring"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Monitoring"
-        android:layout_marginBottom="10dp"
-        android:onClick="buttonOnClickStartMonitoring"/>
+
+        <Button
+            android:id="@+id/button_activity_search_result_profiles_start_monitoring"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Monitoring"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="70dp"
+            android:onClick="buttonOnClickStartMonitoring"/>
+
 
 
     <ScrollView
@@ -51,18 +54,22 @@
         android:id="@+id/horizontalView"
         android:layout_height="wrap_content"
         android:scrollbars="horizontal|vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_marginTop="5dip">
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/TableSearchResult"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="70dp"
+        android:paddingLeft="20dp">
     </TableLayout>
 
 
     </HorizontalScrollView>
     </ScrollView>
+
+
 
 </RelativeLayout>
 

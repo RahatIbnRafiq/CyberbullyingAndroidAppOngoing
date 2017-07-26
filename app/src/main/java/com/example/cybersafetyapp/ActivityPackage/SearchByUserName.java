@@ -199,6 +199,10 @@ public class SearchByUserName extends AppCompatActivity implements NavigationVie
             }
 
         }
+        else
+        {
+            Toast.makeText(this,"Please select a social network", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
