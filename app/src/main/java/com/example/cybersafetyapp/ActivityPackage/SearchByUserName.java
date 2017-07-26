@@ -23,17 +23,19 @@ import com.example.cybersafetyapp.UtilityPackage.IntentSwitchVariables;
 import com.example.cybersafetyapp.UtilityPackage.UtilityVariables;
 
 
-public class SearchByUserName extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class SearchByUserName extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener{
     private String email;
     private String classname = this.getClass().getSimpleName();
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
+    public EditText searchByUserNameEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_by_user_name);
         Bundle messages = getIntent().getExtras();
+        this.searchByUserNameEditText = (EditText)findViewById(R.id.edittext_searchbyusername_username);
         /*if(messages == null ||
                 messages.getString(IntentSwitchVariables.SOURCE_CLASS_NAME) == null ||
                 (!messages.getString(IntentSwitchVariables.SOURCE_CLASS_NAME).equals(AddNewProfile.class.getName())) ||
@@ -58,6 +60,7 @@ public class SearchByUserName extends AppCompatActivity implements NavigationVie
         email = messages.getString(IntentSwitchVariables.EMAIL);
         setupToolbarMenu();
         setupNavigationDrawerMenu();
+        this.searchByUserNameEditText.setOnClickListener(this);
     }
 
     private void setupNavigationDrawerMenu()
@@ -198,4 +201,8 @@ public class SearchByUserName extends AppCompatActivity implements NavigationVie
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        this.searchByUserNameEditText.setText("");
+    }
 }
