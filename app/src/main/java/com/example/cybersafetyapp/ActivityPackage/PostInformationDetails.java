@@ -99,17 +99,25 @@ public class PostInformationDetails extends AppCompatActivity implements Navigat
                 tr_head.setId(i);
                 tr_head.setBackgroundColor(Color.GRAY);
                 tr_head.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                tr_head.setPadding(50,5,15,5);
+
+
 
                 TextView t = new TextView(this);
-                t.setText(resultArray.getJSONObject(i).getString("text"));
-                t.setPadding(2,15,5,15);
+                t.setText(resultArray.getJSONObject(i).getJSONObject("from").getString("username")+":");
+                TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT,TableLayout.LayoutParams.WRAP_CONTENT);
+                t.setLayoutParams(layoutParams);
+                //t.setPadding(50,15,5,15);
                 tr_head.addView(t);
 
                 t = new TextView(this);
-                t.setText(" BY: "+resultArray.getJSONObject(i).getJSONObject("from").getString("username"));
-                t.setPadding(2,15,5,15);
+                t.setText(resultArray.getJSONObject(i).getString("text"));
+                layoutParams = new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT,TableLayout.LayoutParams.WRAP_CONTENT);
+                t.setLayoutParams(layoutParams);
+                //t.setPadding(2,15,5,15);
                 tr_head.addView(t);
-                this.tablePostDetails.addView(tr_head, new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
+
+                this.tablePostDetails.addView(tr_head, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             }
         }
     }

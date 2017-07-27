@@ -126,27 +126,27 @@ public class MonitoringProfileList extends AppCompatActivity implements View.OnC
 
         TextView label_OSNName = new TextView(this);
         label_OSNName.setText(OSNName);
-        label_OSNName.setPadding(2,15,5,15);
+        label_OSNName.setPadding(2,15,15,15);
         tr_head.addView(label_OSNName);
 
 
         TextView label_username = new TextView(this);
         label_username.setText(username);
         label_username.setTextColor(Color.WHITE);
-        label_username.setPadding(0,15,2,15);
+        label_username.setPadding(0,15,15,15);
         tr_head.addView(label_username);
 
         Button clickToViewPosts = new Button(this);
         clickToViewPosts.setText(R.string.Details);
         clickToViewPosts.setTextColor(Color.WHITE);
-        clickToViewPosts.setPadding(0,15,0,15);
+        clickToViewPosts.setPadding(0,15,15,15);
         clickToViewPosts.setOnClickListener(this);
         tr_head.addView(clickToViewPosts);
 
         Button removeUser = new Button(this);
         removeUser.setText(R.string.Remove);
         removeUser.setTextColor(Color.WHITE);
-        removeUser.setPadding(0,15,2,15);
+        removeUser.setPadding(0,15,0,15);
         removeUser.setOnClickListener(this);
         tr_head.addView(removeUser);
 

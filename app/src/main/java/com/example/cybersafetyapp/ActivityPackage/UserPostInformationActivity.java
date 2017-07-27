@@ -113,30 +113,40 @@ public class UserPostInformationActivity extends AppCompatActivity implements Vi
 
 
 
+
+
                 Button clickToViewPostsInfo = new Button(this);
                 clickToViewPostsInfo.setText(R.string.SeePost);
                 clickToViewPostsInfo.setTextColor(Color.WHITE);
-                clickToViewPostsInfo.setPadding(0,10,0,10);
+                clickToViewPostsInfo.setPadding(20,10,0,10);
                 clickToViewPostsInfo.setOnClickListener(this);
+                TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(170,TableLayout.LayoutParams.WRAP_CONTENT);
+                clickToViewPostsInfo.setLayoutParams(layoutParams);
                 tr_head.addView(clickToViewPostsInfo);
 
                 TextView t = new TextView(this);
                 t.setText(postData.getJSONObject("likes").getString("count")+" likes");
                 t.setTextColor(Color.WHITE);
-                t.setPadding(12,10,2,10);
+                //t.setPadding(12,10,2,10);
+                layoutParams = new TableRow.LayoutParams(150,TableLayout.LayoutParams.WRAP_CONTENT);
+                t.setLayoutParams(layoutParams);
                 tr_head.addView(t);
 
                 t = new TextView(this);
                 t.setText(postData.getJSONObject("comments").getString("count")+" comments");
                 t.setTextColor(Color.WHITE);
-                t.setPadding(10,10,2,10);
+                //t.setPadding(10,10,2,10);
+                layoutParams = new TableRow.LayoutParams(150,TableLayout.LayoutParams.WRAP_CONTENT);
+                t.setLayoutParams(layoutParams);
                 tr_head.addView(t);
 
                 try{
                     t = new TextView(this);
                     t.setText("Caption:"+postData.getJSONObject("caption").getString("text"));
                     t.setTextColor(Color.WHITE);
-                    t.setPadding(10,10,2,10);
+                    layoutParams = new TableRow.LayoutParams(350,TableLayout.LayoutParams.WRAP_CONTENT);
+                    t.setLayoutParams(layoutParams);
+                    //t.setPadding(10,10,2,10);
                     tr_head.addView(t);
 
                 }catch (Exception ex)
@@ -144,7 +154,9 @@ public class UserPostInformationActivity extends AppCompatActivity implements Vi
                     t = new TextView(this);
                     t.setText(R.string.NoCaption);
                     t.setTextColor(Color.WHITE);
-                    t.setPadding(10,10,2,10);
+                    //t.setPadding(10,10,2,10);
+                    layoutParams = new TableRow.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT,TableLayout.LayoutParams.WRAP_CONTENT);
+                    t.setLayoutParams(layoutParams);
                     tr_head.addView(t);
                 }
 
@@ -153,14 +165,18 @@ public class UserPostInformationActivity extends AppCompatActivity implements Vi
                 t = new TextView(this);
                 t.setText(postData.getString("id"));
                 t.setTextColor(Color.WHITE);
-                t.setPadding(2,10,2,10);
+                //t.setPadding(2,10,2,10);
                 t.setVisibility(View.INVISIBLE);
+                layoutParams = new TableRow.LayoutParams(0,0);
+                t.setLayoutParams(layoutParams);
                 tr_head.addView(t);
 
                 t = new TextView(this);
                 t.setText(postData.getString("link"));
                 t.setTextColor(Color.WHITE);
-                t.setPadding(2,10,2,10);
+                //t.setPadding(2,10,2,10);
+                layoutParams = new TableRow.LayoutParams(0,0);
+                t.setLayoutParams(layoutParams);
                 t.setVisibility(View.INVISIBLE);
                 tr_head.addView(t);
 

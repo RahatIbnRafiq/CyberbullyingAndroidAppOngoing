@@ -1,7 +1,10 @@
 package com.example.cybersafetyapp.ActivityPackage;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -14,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -28,6 +33,7 @@ import com.example.cybersafetyapp.UtilityPackage.UtilityVariables;
 
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.util.Iterator;
 
 public class UserSocialNetworkInformationDetail extends AppCompatActivity implements JsonResultReceiver.Receiver,
@@ -123,24 +129,40 @@ public class UserSocialNetworkInformationDetail extends AppCompatActivity implem
             try {
                 TableRow tr_head = new TableRow(this);
                 tr_head.setBackgroundColor(Color.GRAY);
-                tr_head.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                //tr_head.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT));
                 String value = userdata.get(key).toString();
+                tr_head.setPadding(5,5,15,5);
                 //Log.i(UtilityVariables.tag,"key: "+key+" value: "+value);
 
                 TextView t = new TextView(this);
                 t.setText(key);
                 t.setTextColor(Color.WHITE);
-                t.setPadding(0,10,5,10);
+                TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(250,TableLayout.LayoutParams.WRAP_CONTENT);
+                t.setLayoutParams(layoutParams);
                 tr_head.addView(t);
 
-                t = new TextView(this);
-                t.setText(value);
-                t.setTextColor(Color.WHITE);
-                t.setPadding(0,10,5,10);
-                tr_head.addView(t);
-                tableSearchResult.addView(tr_head, new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                if(key.equals("profile_picture"))
+                {
+                    ImageView profilePicture = new ImageView(this);
+                    new DownloadImageTask(profilePicture).execute(value);
+                    tr_head.addView(profilePicture);
+                    layoutParams = new TableRow.LayoutParams(100, 100);
+                    profilePicture.setLayoutParams(layoutParams);
+                }
+                else
+                {
+                    t = new TextView(this);
+                    t.setText(value);
+                    t.setTextColor(Color.WHITE);
+                    layoutParams = new TableRow.LayoutParams(680,TableLayout.LayoutParams.WRAP_CONTENT);
+                    t.setLayoutParams(layoutParams);
+                    tr_head.addView(t);
+                }
+
+
+                tableSearchResult.addView(tr_head, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
             } catch (Exception ex) {
-                Log.i(UtilityVariables.tag,this.classname+" :addDataToRow function: exception while ietaring through json object: "+ex.toString());
+                Log.i(UtilityVariables.tag,this.classname+" :addDataToRow function: exception while iterating through json object: "+ex.toString());
             }
         }
 
@@ -202,6 +224,8 @@ public class UserSocialNetworkInformationDetail extends AppCompatActivity implem
         }
     }
 
+
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         closeDrawer();
@@ -253,4 +277,30 @@ public class UserSocialNetworkInformationDetail extends AppCompatActivity implem
         }
         return false;
     }
+
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
+
 }
